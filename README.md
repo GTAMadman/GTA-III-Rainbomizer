@@ -52,9 +52,9 @@ More information about how to configure specific randomizers is provided in the 
 
 #### Beta Testers
 
-- [Fryterp23](https://www.twitch.tv/fryterp23)
-- [Hugo_One](https://www.twitch.tv/hugo_one)
-- [SpeedyFolf](https://www.twitch.tv/speedyfolf)
+- [Fryterp23](https://www.twitch.tv/fryterp23) - Streaming and extensive testing of the mod
+- [Hugo_One](https://www.twitch.tv/hugo_one) - Streaming the mod
+- [SpeedyFolf](https://www.twitch.tv/speedyfolf) - Streaming and testing of the mod
 
 ## Used Libraries
 
