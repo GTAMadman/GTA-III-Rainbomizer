@@ -22,7 +22,7 @@ Check this link for a v1.0 EXE - https://cdn.discordapp.com/attachments/68199706
 
 If you wish to change any of the mod's functionalities, for example to disable a specific randomizer, a configuration file (`Rainbomizer.cfg`) has been provided with the mod. The config file is located in the game's root directory.
 
-The default configuration file is in the main repository, `Rainbomizer.cfg`, and is automatically created by the mod if it doesn't exist in the rainbomizer folder.
+The default configuration file is in the main repository, `Rainbomizer.cfg`, and is automatically created by the mod if it doesn't exist in the game folder.
 
 The configuration file is in the CFG format.
 
@@ -32,7 +32,7 @@ More information about how to configure specific randomizers is provided in the 
 
 ## Installation
 
-1) Downdrade to 1.0 (download link available above)
+1) Downgrade to 1.0 (download link available above)
 2) Put the ASI and CFG files into your GTA III directory.
 
 - It is recommended to not use CLEO with this mod as it can prevent the autosave function from working properly.
