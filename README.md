@@ -62,7 +62,7 @@ More information about how to configure specific randomizers is provided in the 
 
 ## Contribution
 
-You can contribute to the project by reporting any crashes/issues you encounter in the [Issues](https://github.com/GTAMadman/REPOSITORY/issues) section of the repository.
+You can contribute to the project by reporting any crashes/issues you encounter in the [Issues](https://github.com/GTAMadman/GTA-III-Rainbomizer/issues) section of the repository.
 
 Pull requests are welcome, but are required to follow the current style used in the project.
 
