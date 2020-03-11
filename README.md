@@ -66,4 +66,4 @@ You can contribute to the project by reporting any crashes/issues you encounter 
 
 Pull requests are welcome, but are required to follow the current style used in the project.
 
-You can also keep up with or contribute to development as it happens by [joining the official Rainbomizer Discord!](https://discord.gg/BYVBQw7).
+You can also keep up with or contribute to development as it happens by [joining the official Rainbomizer Discord!](https://discord.gg/BYVBQw7)
