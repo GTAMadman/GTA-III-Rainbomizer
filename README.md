@@ -30,6 +30,13 @@ To configure a specific randomizer, search for its name in the configuration fil
 
 More information about how to configure specific randomizers is provided in the default config file.
 
+## Installation
+
+1) Downdrade to 1.0 (download link available above)
+2) Put the ASI and CFG files into your GTA III directory.
+
+- It is recommended to not use CLEO with this mod as it can prevent the autosave function from working properly.
+
 ## Credits
 
 #### Lead Developers
