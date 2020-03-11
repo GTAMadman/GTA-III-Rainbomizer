@@ -28,6 +28,8 @@ The configuration file is in the CFG format.
 
 To configure a specific randomizer, search for its name in the configuration file. You can set it to 'true' or 'false' to enable or disable it respectively.
 
+Configuration options marked with '# Experimental' are not fully complete and will still have issues.
+
 More information about how to configure specific randomizers is provided in the default config file.
 
 ## Installation
