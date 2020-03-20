@@ -12,6 +12,7 @@ bool Config::ColourRandomizer::vehicleEnabled;
 bool Config::ColourRandomizer::textEnabled;
 bool Config::ColourRandomizer::rainbowTextEnabled;
 bool Config::ColourRandomizer::markersEnabled;
+bool Config::VoiceLineRandomizer::Enabled;
 bool Config::Autosave::Enabled;
 int Config::Autosave::slot;
 
@@ -229,6 +230,35 @@ void Config::WeaponRandomizer::Read()
 		}
 	}
 }
+void Config::VoiceLineRandomizer::Read()
+{
+	if (!std::filesystem::exists(ConfigName))
+		WriteConfig();
+
+	std::ifstream config;
+	config.open(ConfigName);
+
+	std::vector<std::string> data;
+	std::string str;
+	while (std::getline(config, str))
+		data.push_back(str);
+
+	config.close();
+
+	for (int i = 0; i < data.size(); i++)
+	{
+		if (data[i].find(this->Name) != std::string::npos)
+		{
+			if (data[i].find("true") != std::string::npos)
+			{
+				this->Enabled = true;
+				break;
+			}
+			this->Enabled = false;
+			break;
+		}
+	}
+}
 void Config::Autosave::Read()
 {
 	if (!std::filesystem::exists(ConfigName))
@@ -304,6 +334,9 @@ void Config::Initialise()
 
 	ColourRandomizer colours;
 	colours.Read();
+
+	VoiceLineRandomizer voice;
+	voice.Read();
 
 	Autosave autosave;
 	autosave.Read();

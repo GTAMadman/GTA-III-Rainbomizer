@@ -80,7 +80,7 @@ void scm::InitialiseVehiclePatterns()
 	Patterns.push_back(pattern);
 
 	// Perennial - Uzi Rider
-	pattern = { .vehicle = {94}, .coords = {4, -310, 16}, .doors = {4} };
+	pattern = { .vehicle = {94}, .allowed = {127}, .coords = {4, -310, 16}, .doors = {4} };
 	Patterns.push_back(pattern);
 
 	// The Thieves
@@ -201,8 +201,7 @@ int scm::GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread)
 			}
 			if (vehicles.size() > 0)
 			{
-				Patterns[index].chosen = vehicles[RandomNumber(0, vehicles.size() - 1)];
-				return Patterns[index].chosen;
+				return vehicles[RandomNumber(0, vehicles.size() - 1)];
 			}
 		}
 	}

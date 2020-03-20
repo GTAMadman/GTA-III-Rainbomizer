@@ -54,6 +54,12 @@ public:
 		static bool markersEnabled;
 		void Read();
 	};
+	struct VoiceLineRandomizer
+	{
+		std::string Name = "VoiceLineRandomizer";
+		static bool Enabled;
+		void Read();
+	};
 	struct Autosave
 	{
 		std::string autosaveName = "Autosave =";

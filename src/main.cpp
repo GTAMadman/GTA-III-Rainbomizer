@@ -5,6 +5,7 @@
 #include "Traffic.h"
 #include "Weapons.h"
 #include "Colours.h"
+#include "voices.h"
 #include "Autosave.h"
 #include "Config.h"
 
@@ -18,6 +19,7 @@ public:
 		Traffic::Initialise();
 		Weapons::Initialise();
 		Colours::Initialise();
+		voices::Initialise();
 		Autosave::Initialise();
     }
 } rainbomizer;

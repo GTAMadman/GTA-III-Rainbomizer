@@ -8,6 +8,10 @@
 #include "CTheScripts.h"
 #include "CVehicleModelInfo.h"
 
+#include "CBoat.h"
+#include "CPlane.h"
+#include "CHeli.h"
+
 class scm : Functions, ModelInfo
 {
 private:
@@ -24,7 +28,6 @@ private:
 		int move[3] = { 0, 0, 0 };
 		std::string thread = "";
 		int doors = 0;
-		int chosen = 0; // Mainly used for moving specific vehicle types
 	};
 	static std::vector<int> ProcessVehicleTypes(Pattern pattern);
 public:
