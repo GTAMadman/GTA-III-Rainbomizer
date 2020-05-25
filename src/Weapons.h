@@ -12,6 +12,8 @@ public:
 private:
 	static int __fastcall GiveRandomizedWeapon(CPed* ped, void* edx, int weapon, int ammo);
 	static void __fastcall SetCurrentWeapon(CPed* ped, void* edx, int slot);
+	static void __fastcall FixRoadBlockPoliceWeapons(CPed* ped, void* edx, int slot);
+	static void ClearWeapons(CPed* ped);
 	static int GetWeaponBasedOnPattern(int weapon, int x, int y, int z, int pedID, std::string thread);
 	static int GetWeaponSlotFromModelID(int modelID);
 	struct Pattern

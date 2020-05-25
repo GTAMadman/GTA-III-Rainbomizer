@@ -5,8 +5,8 @@
 
 class voices : Functions
 {
-	static int GetRandomizedMissionAudioSfx (const char* name);
-	
+private:
+	static int GetRandomizedMissionAudioSfx(const char* name);
 public:
 	static void Initialise();
 };

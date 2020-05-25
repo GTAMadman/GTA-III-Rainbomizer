@@ -12,6 +12,7 @@ void __fastcall Parked::ParkedVehiclesRandomizer(CCarGenerator* gen)
 	gen->m_nModelId = (eVehicleModel)newModel;
 
 	gen->DoInternalProcessing();
+	gen->m_nModelId = (eVehicleModel)oldModel;
 }
 void* __fastcall Parked::CarparkVehiclesRandomizer(CVehicle* vehicle, void* edx, int model, char createdBy)
 {
