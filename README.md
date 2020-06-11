@@ -1,6 +1,8 @@
 Rainbomizer is a randomizer for Grand Theft Auto III.
 
 <img src="https://cdn.discordapp.com/attachments/651869008618061837/678350944890781739/r1outink.png">
+Logo created by Catmare
+
 
 ## Features
 
