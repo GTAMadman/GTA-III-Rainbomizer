@@ -1,6 +1,7 @@
 #include "voices.h"
 #include <cstdint>
 #include <unordered_map>
+#include <algorithm>
 
 struct MissionAudioData
 {
@@ -50,6 +51,8 @@ static int GetRandomizedMissionAudioSfx (const char* name)
 		[sound - STREAMED_SOUND_MISSION_LIBA1].SoundName;
 
 	std::string subtitle = subtitles.count(name) ? subtitles[name] : name;
+	std::transform(subtitle.begin(), subtitle.end(), subtitle.begin(),
+		       [](unsigned char c){ return std::tolower(c); });
 	
 	voiceLines[subtitle] = newName;
 	if (subtitles.count(newName))
@@ -60,8 +63,12 @@ static int GetRandomizedMissionAudioSfx (const char* name)
 
 char* __fastcall voices::FixSubtitles(CText* text, void* edx, char* key)
 {
-	if (voiceLines.count(key))
-		key = voiceLines[key].data();
+	std::string _key = key;
+	std::transform(_key.begin(), _key.end(), _key.begin(),
+		       [](unsigned char c){ return std::tolower(c); };)
+		
+	if (voiceLines.count(_key))
+		key = voiceLines[_key].data();
 	
 	return plugin::CallMethodAndReturn<char*, 0x52C5A0, CText *>(text, key);
 }
@@ -74,3 +81,5 @@ void voices::Initialise()
 			plugin::patch::RedirectCall(0x43D119, voices::FixSubtitles);
 		}
 }
+
+std::unordered_map<std::string, std::string> voices::voiceLines;
