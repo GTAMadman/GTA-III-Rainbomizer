@@ -44,7 +44,7 @@ void __fastcall scm::FixForcedPlayerVehicle(CRunningScript* thisScript, void* ed
 void scm::InitialiseVehiclePatterns()
 {
 	/* General Patterns */
-	Pattern pattern = { .gVehicle = {"car"}, .allowedType = {"car", "dodo"} };
+	Pattern pattern = { .gVehicle = {"car"},. allowedType = {"car", "dodo"} };
 	Patterns.push_back(pattern);
 
 	pattern = { .gVehicle = {"boat"}, .allowedType = {"boat"} };
@@ -89,37 +89,37 @@ void scm::InitialiseVehiclePatterns()
 	Patterns.push_back(pattern);
 
 	// Stinger - Grand Theft Auto
-	pattern = { .vehicle = {92}, .denied = { 93, 97, 98, 99, 103, 104, 106, 108, 112, 117, 118, 122, 123, 126,
+	pattern = { .vehicle = {92}, .denied = { 93, 97, 98, 99, 103, 104, 106, 108, 112, 113, 117, 118, 122, 123,
 	127, 130, 132, 133, 139, 144, 145, 146, 149}, .allowedType = {"car"}, .thread = {"kenji2"} };
 	Patterns.push_back(pattern); // Denied all larger vehicles
 
 	// Infurnus - Grand Theft Auto
-	pattern = { .vehicle = {101}, .denied = {93, 97, 98, 99, 103, 104, 106, 108, 112, 117, 118, 122, 123, 126,
-	127, 130, 132, 133, 139, 144, 145, 146, 149},.allowedType = {"car"}, .thread = {"kenji2"} };
+	pattern = { .vehicle = {101}, .denied = {93, 97, 98, 99, 103, 104, 106, 108, 112, 113, 117, 118, 122, 123,
+	127, 130, 132, 133, 139, 144, 145, 146, 149}, .allowedType = {"car"}, .thread = {"kenji2"} };
 	Patterns.push_back(pattern); // Denied all larger vehicles
 
 	// Infurnus - Rigged To Blow
-	pattern = { .vehicle = {101},.denied = {93, 97, 98, 99, 103, 104, 106, 108, 112, 117, 118, 122, 123, 126,
-	127, 130, 132, 133, 139, 144, 145, 146, 149},.allowedType = {"car"},.thread = {"hood3"} };
+	pattern = { .vehicle = {101}, .denied = {93, 97, 98, 99, 103, 104, 106, 108, 112, 113, 117, 118, 122, 123,
+	127, 130, 132, 133, 139, 144, 145, 146, 149}, .allowedType = {"car"}, .thread = {"hood3"} };
 	Patterns.push_back(pattern); // Denied all larger vehicles
 
 	// Cheetah - Grand Theft Auto
-	pattern = { .vehicle = {105},.denied = {93, 97, 98, 99, 103, 104, 106, 108, 112, 117, 118, 122, 123, 126,
-	127, 130, 132, 133, 139, 144, 145, 146, 149},.allowedType = {"car"}, .thread = {"kenji2"} };
+	pattern = { .vehicle = {105}, .denied = {93, 97, 98, 99, 103, 104, 106, 108, 112, 113, 117, 118, 122, 123,
+	127, 130, 132, 133, 139, 144, 145, 146, 149}, .allowedType = {"car"}, .thread = {"kenji2"} };
 	Patterns.push_back(pattern); // Denied all larger vehicles
 
 	// Stallion - Don't Spank...
-	pattern = { .vehicle = {129}, .denied = {97, 106, 116, 117, 122, 123, 126}, .allowedType = {"car"}, 
+	pattern = { .vehicle = {129}, .denied = {97, 98, 106, 116, 117, 122, 123}, .allowedType = {"car"},
 	.coords = { 1396, -837, -100 } };
-	Patterns.push_back(pattern); 
+	Patterns.push_back(pattern);
 
 	// Mike Lips' Last Lunch
-	pattern = { .vehicle = {91}, .denied = {93, 98, 104, 113, 122, 123, 127, 132, 133, 145, 146},
-	.coords = {1336, -460, -100} }; // Removed some large vehicles
+	pattern = { .vehicle = {91}, .denied = {93, 98, 104, 106, 113, 122, 123, 127, 132, 133, 145, 146},
+	.allowedType = {"car"}, .coords = {1336, -460, -100} }; // Removed some large vehicles
 	Patterns.push_back(pattern);
 
 	// Cipriani's Chauffeur
-	pattern = { .vehicle = {134}, .denied = {93, 98, 104, 113, 122, 123, 127, 132, 133, 145, 146}, 
+	pattern = { .vehicle = {134}, .denied = {93, 98, 104, 113, 122, 123, 127, 132, 133, 145, 146},
 	.allowedType = {"car"}, .coords = {1189, -864, 14} }; // Removed some large vehicles
 	Patterns.push_back(pattern);
 }
@@ -243,7 +243,8 @@ std::vector<int> scm::ProcessVehicleTypes(Pattern pattern)
 			{
 				for (int model = 90; model < 151; model++)
 				{
-					if (CModelInfo::IsCarModel(model) && model != RC_BANDIT_MODEL && model != DEAD_DODO_MODEL)
+					if (CModelInfo::IsCarModel(model) && model != RC_BANDIT_MODEL && model != DODO_MODEL &&
+						model != DEAD_DODO_MODEL)
 						output.push_back(model);
 				}
 			}

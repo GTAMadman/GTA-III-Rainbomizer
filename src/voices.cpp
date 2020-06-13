@@ -10,6 +10,7 @@ struct MissionAudioData
 	uint32_t SoundId;
 };
 
+
 std::unordered_map<std::string, std::string> subtitles{{
 	{"lib_a1", "ebal_a"},  {"lib_a2", "ebal_a1"}, {"lib_a", "ebal_b"},
 	{"lib_b", "ebal_d"},   {"lib_c", "ebal_g"},  {"lib_d", "lm1_9"},
@@ -77,7 +78,6 @@ char* __fastcall voices::FixSubtitles(CText* text, void* edx, char* key)
 	
 	return plugin::CallMethodAndReturn<char*, 0x52C5A0, CText *>(text, key);
 }
-
 void voices::Initialise()
 {
 	if (Config::VoiceLineRandomizer::Enabled)

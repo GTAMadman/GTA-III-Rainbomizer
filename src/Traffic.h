@@ -21,6 +21,7 @@ private:
 	static void* __fastcall FixTrafficVehicles(CVehicle* vehicle, void* edx, int model, char createdBy);
 	static int ChooseModel();
 	static int ChoosePoliceModel();
+	static void* __fastcall RandomizeRoadblocks(CVehicle* vehicle, void* edx, int model, char createdBy);
 	static void FixEmptyPoliceCars(CVehicle* vehicle);
 	static void __fastcall PedExitCar(CPed* ped, void* edx);
 	static void __fastcall PedEnterCar(CPed* ped, void* edx);

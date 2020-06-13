@@ -57,6 +57,34 @@ void* Traffic::RandomizeCarPeds(ePedType type, int model, CVector* posn)
 
 	return CPopulation::AddPed(type, model, posn);
 }
+void* __fastcall Traffic::RandomizeRoadblocks(CVehicle* vehicle, void* edx, int model, char createdBy)
+{
+	int newModel;
+	while ((newModel = ms_vehiclesLoaded[RandomNumber(0, CStreaming::ms_numVehiclesLoaded - 1)]),
+		ModelInfo::IsBlacklistedVehicle(newModel));
+
+	if (!IsModelLoaded(newModel))
+		newModel = model;
+
+	if (CModelInfo::IsBoatModel(newModel))
+		reinterpret_cast<CBoat*>(vehicle)->CBoat::CBoat(newModel, createdBy);
+
+	if (CModelInfo::IsPlaneModel(newModel))
+		reinterpret_cast<CPlane*>(vehicle)->CPlane::CPlane(newModel, createdBy);
+
+	if (CModelInfo::IsHeliModel(newModel))
+		reinterpret_cast<CHeli*>(vehicle)->CHeli::CHeli(newModel, createdBy);
+
+	if (CModelInfo::IsTrainModel(newModel))
+		reinterpret_cast<CTrain*>(vehicle)->CTrain::CTrain(newModel, createdBy);
+
+	if (CModelInfo::IsCarModel(newModel))
+		reinterpret_cast<CAutomobile*>(vehicle)->CAutomobile::CAutomobile(newModel, createdBy);
+
+	vehicle->m_nState = eEntityStatus::STATUS_PHYSICS;
+
+	return vehicle;
+}
 void* __fastcall Traffic::FixTrafficVehicles(CVehicle* vehicle, void* edx, int model, char createdBy)
 {
 	if (CModelInfo::IsBoatModel(model))
@@ -127,6 +155,7 @@ void Traffic::Initialise()
 		plugin::patch::RedirectCall(0x417FDE, ChoosePoliceModel);
 		plugin::patch::RedirectCall(0x40AFF2, ChooseModelToLoad);
 		plugin::patch::RedirectCall(0x4F59CD, RandomizeCarPeds);
+		plugin::patch::RedirectCall(0x43749C, RandomizeRoadblocks);
 		plugin::patch::RedirectCall(0x416C9E, FixTrafficVehicles);
 		plugin::patch::RedirectCall(0x417CE8, FixEmptyPoliceCars);
 		plugin::patch::RedirectCall(0x4B1EDB, PedExitCar);
