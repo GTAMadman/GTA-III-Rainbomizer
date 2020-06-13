@@ -2,11 +2,17 @@
 #include "plugin.h"
 #include "Config.h"
 #include "Functions.h"
+#include <string>
+#include <unordered_map>
+
+class CText;
 
 class voices : Functions
 {
-private:
-	static int GetRandomizedMissionAudioSfx(const char* name);
+	static std::unordered_map<std::string, std::string> voiceLines;
+	static char* __fastcall FixSubtitles(CText* t, void* edx, char* key);
+	static int GetRandomizedMissionAudioSfx (const char* name);
+	
 public:
 	static void Initialise();
 };
