@@ -11,6 +11,7 @@ class voices : Functions
 {
 	static std::unordered_map<std::string, std::string> voiceLines;
 	static char* __fastcall FixSubtitles(CText* t, void* edx, char* key);
+	static int GetRandomizedMissionAudioSfx (const char* name);
 	
 public:
 	static void Initialise();
