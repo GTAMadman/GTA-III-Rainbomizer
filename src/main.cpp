@@ -6,6 +6,8 @@
 #include "Weapons.h"
 #include "Colours.h"
 #include "voices.h"
+#include "Pickups.h"
+#include "Pager.h"
 #include "Autosave.h"
 #include "Config.h"
 
@@ -20,6 +22,8 @@ public:
 		Weapons::Initialise();
 		Colours::Initialise();
 		voices::Initialise();
+		Pickups::Initialise();
+		Pager::Initialise();
 		Autosave::Initialise();
     }
 } rainbomizer;

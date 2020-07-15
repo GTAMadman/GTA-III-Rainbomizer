@@ -3,341 +3,138 @@
 std::string Config::ConfigName = "Rainbomizer.cfg";
 
 /* Annoyingly messy initialisers */
-bool Config::ScriptedVehiclesRandomizer::Enabled;
-bool Config::ParkedVehiclesRandomizer::Enabled;
-bool Config::RCVehiclesRandomizer::Enabled;
-bool Config::TrafficRandomizer::Enabled;
-bool Config::WeaponRandomizer::Enabled;
-bool Config::ColourRandomizer::vehicleEnabled;
-bool Config::ColourRandomizer::textEnabled;
-bool Config::ColourRandomizer::rainbowTextEnabled;
-bool Config::ColourRandomizer::markersEnabled;
-bool Config::VoiceLineRandomizer::Enabled;
-bool Config::Autosave::Enabled;
-int Config::Autosave::slot;
+Config::ScriptedVehiclesRandomizer Config::script;
+Config::ParkedVehiclesRandomizer Config::parked;
+Config::RCVehiclesRandomizer Config::rc;
+Config::TrafficRandomizer Config::traffic;
+Config::WeaponRandomizer Config::weapons;
+Config::ColourRandomizer Config::colours;
+Config::VoiceLineRandomizer Config::voice;
+Config::PickupsRandomizer Config::pickups;
+Config::PagerRandomizer Config::pager;
+Config::Autosave Config::autosave;
 
-/* Probably not the best way to read from and write to the config, but it works for now */
-void Config::ScriptedVehiclesRandomizer::Read()
+void ReadConfigBool(const std::string& key, const std::string& data, bool& value)
 {
-	if (!std::filesystem::exists(ConfigName))
-		WriteConfig();
-
-	std::ifstream config;
-	config.open(ConfigName);
-
-	std::vector<std::string> data;
-	std::string str;
-	while (std::getline(config, str))
-		data.push_back(str);
-
-	config.close();
-
-	for (int i = 0; i < data.size(); i++)
+	if (data.find(key) != std::string::npos)
+		value = data.find("true") != std::string::npos;
+}
+void ReadConfigInt(const std::string& key, const std::string& data, int& value)
+{
+	if (data.find(key) != std::string::npos)
 	{
-		if (data[i].find(this->Name) != std::string::npos)
+		std::stringstream stream;
+		stream << data;
+
+		std::string str;
+		int val;
+
+		while (!stream.eof())
 		{
-			if (data[i].find("true") != std::string::npos)
+			stream >> str;
+			if (std::stringstream(str) >> val)
 			{
-				this->Enabled = true;
+				value = val;
 				break;
 			}
-			this->Enabled = false;
-			break;
 		}
 	}
 }
-void Config::RCVehiclesRandomizer::Read()
+void Config::ScriptedVehiclesRandomizer::Read(const std::string& line)
 {
-	if (!std::filesystem::exists(ConfigName))
-		WriteConfig();
+	ReadConfigBool("ScriptVehiclesRandomizer", line, Enabled);
 
-	std::ifstream config;
-	config.open(ConfigName);
-
-	std::vector<std::string> data;
-	std::string str;
-	while (std::getline(config, str))
-		data.push_back(str);
-
-	config.close();
-
-	for (int i = 0; i < data.size(); i++)
-	{
-		if (data[i].find(this->Name) != std::string::npos)
-		{
-			if (data[i].find("true") != std::string::npos)
-			{
-				this->Enabled = true;
-				break;
-			}
-			this->Enabled = false;
-			break;
-		}
-	}
+	ReadConfigBool("OffroadMissions", line, offroadEnabled);
+	ReadConfigBool("RCMissions", line, rcEnabled);
 }
-void Config::ParkedVehiclesRandomizer::Read()
+void Config::RCVehiclesRandomizer::Read(const std::string& line)
 {
-	if (!std::filesystem::exists(ConfigName))
-		WriteConfig();
-
-	std::ifstream config;
-	config.open(ConfigName);
-
-	std::vector<std::string> data;
-	std::string str;
-	while (std::getline(config, str))
-		data.push_back(str);
-
-	config.close();
-
-	for (int i = 0; i < data.size(); i++)
-	{
-		if (data[i].find(this->Name) != std::string::npos)
-		{
-			if (data[i].find("true") != std::string::npos)
-			{
-				this->Enabled = true;
-				break;
-			}
-			this->Enabled = false;
-			break;
-		}
-	}
+	ReadConfigBool("RandomizeRCVehicles", line, Enabled);
 }
-void Config::ColourRandomizer::Read()
+void Config::ParkedVehiclesRandomizer::Read(const std::string& line)
 {
-	if (!std::filesystem::exists(ConfigName))
-		WriteConfig();
-
-	std::ifstream config;
-	config.open(ConfigName);
-
-	std::vector<std::string> data;
-	std::string str;
-	while (std::getline(config, str))
-		data.push_back(str);
-
-	config.close();
-
-	for (int i = 0; i < data.size(); i++)
-	{
-		if (data[i].find(this->vehicleName) != std::string::npos)
-		{
-			if (data[i].find("true") != std::string::npos)
-			{
-				this->vehicleEnabled = true;
-				break;
-			}
-			this->vehicleEnabled = false;
-			break;
-		}
-	}
-	for (int i = 0; i < data.size(); i++)
-	{
-		if (data[i].find(this->textName) != std::string::npos)
-		{
-			if (data[i].find("true") != std::string::npos)
-			{
-				this->textEnabled = true;
-				break;
-			}
-			this->textEnabled = false;
-			break;
-		}
-	}
-	for (int i = 0; i < data.size(); i++)
-	{
-		if (data[i].find(this->rainbowTextName) != std::string::npos)
-		{
-			if (data[i].find("true") != std::string::npos)
-			{
-				this->rainbowTextEnabled = true;
-				break;
-			}
-			this->rainbowTextEnabled = false;
-			break;
-		}
-	}
-	for (int i = 0; i < data.size(); i++)
-	{
-		if (data[i].find(this->markersName) != std::string::npos)
-		{
-			if (data[i].find("true") != std::string::npos)
-			{
-				this->markersEnabled = true;
-				break;
-			}
-			this->markersEnabled = false;
-			break;
-		}
-	}
+	ReadConfigBool("ParkedVehiclesRandomizer", line, Enabled);
 }
-void Config::TrafficRandomizer::Read()
+void Config::ColourRandomizer::Read(const std::string& line)
 {
-	if (!std::filesystem::exists(ConfigName))
-		WriteConfig();
+	ReadConfigBool("RandomizeVehicleColours", line, vehicleEnabled);
+	ReadConfigBool("RandomizeHUDColours", line, textEnabled);
+	ReadConfigBool("RandomizeMarkerColours", line, markersEnabled);
 
-	std::ifstream config;
-	config.open(ConfigName);
+	ReadConfigBool("RandomizePickupColours", line, pickupsEnabled);
+	ReadConfigBool("RandomizeExplosionColours", line, explosionsEnabled);
 
-	std::vector<std::string> data;
-	std::string str;
-	while (std::getline(config, str))
-		data.push_back(str);
-
-	config.close();
-
-	for (int i = 0; i < data.size(); i++)
-	{
-		if (data[i].find(this->Name) != std::string::npos)
-		{
-			if (data[i].find("true") != std::string::npos)
-			{
-				this->Enabled = true;
-				break;
-			}
-			this->Enabled = false;
-			break;
-		}
-	}
+	ReadConfigBool("RainbowHUDColours", line, rainbowTextEnabled);
 }
-void Config::WeaponRandomizer::Read()
+void Config::TrafficRandomizer::Read(const std::string& line)
 {
-	if (!std::filesystem::exists(ConfigName))
-		WriteConfig();
+	ReadConfigBool("TrafficRandomizer", line, Enabled);
+	ReadConfigBool("RandomizeRoadblocks", line, roadblocksEnabled);
 
-	std::ifstream config;
-	config.open(ConfigName);
-
-	std::vector<std::string> data;
-	std::string str;
-	while (std::getline(config, str))
-		data.push_back(str);
-
-	config.close();
-
-	for (int i = 0; i < data.size(); i++)
-	{
-		if (data[i].find(this->Name) != std::string::npos)
-		{
-			if (data[i].find("true") != std::string::npos)
-			{
-				this->Enabled = true;
-				break;
-			}
-			this->Enabled = false;
-			break;
-		}
-	}
+	ReadConfigBool("DeadDodo", line, deadDodo);
+	ReadConfigBool("Train", line, train);
+	ReadConfigBool("AirTrain", line, airTrain);
 }
-void Config::VoiceLineRandomizer::Read()
+void Config::WeaponRandomizer::Read(const std::string& line)
 {
-	if (!std::filesystem::exists(ConfigName))
-		WriteConfig();
-
-	std::ifstream config;
-	config.open(ConfigName);
-
-	std::vector<std::string> data;
-	std::string str;
-	while (std::getline(config, str))
-		data.push_back(str);
-
-	config.close();
-
-	for (int i = 0; i < data.size(); i++)
-	{
-		if (data[i].find(this->Name) != std::string::npos)
-		{
-			if (data[i].find("true") != std::string::npos)
-			{
-				this->Enabled = true;
-				break;
-			}
-			this->Enabled = false;
-			break;
-		}
-	}
+	ReadConfigBool("WeaponRandomizer", line, Enabled);
 }
-void Config::Autosave::Read()
+void Config::PickupsRandomizer::Read(const std::string& line)
 {
-	if (!std::filesystem::exists(ConfigName))
-		WriteConfig();
+	ReadConfigBool("PickupsRandomizer", line, Enabled);
+	ReadConfigBool("RandomizePedWeaponDrops", line, randomizePedDrops);
 
-	std::ifstream config;
-	config.open(ConfigName);
+	ReadConfigBool("Weapons", line, weapons);
+	ReadConfigBool("Health", line, health);
+	ReadConfigBool("Armour", line, armour);
+	ReadConfigBool("Adrenaline", line, adrenaline);
+	ReadConfigBool("Bribes", line, bribes);
+	ReadConfigBool("Briefcase", line, briefcase);
+}
+void Config::PagerRandomizer::Read(const std::string& line)
+{
+	ReadConfigBool("PagerRandomizer", line, Enabled);
+	ReadConfigBool("AllowSubtitleMessages", line, allowSubtitlesEnabled);
+}
+void Config::VoiceLineRandomizer::Read(const std::string& line)
+{
+	ReadConfigBool("VoiceLineRandomizer", line, Enabled);
+	ReadConfigBool("MatchSubtitles", line, MatchSubtitles);
+}
+void Config::Autosave::Read(const std::string& line)
+{
+	ReadConfigBool("Autosave", line, Enabled);
+	ReadConfigInt("Slot", line, slot);
 
-	std::vector<std::string> data;
-	std::string str;
-	while (std::getline(config, str))
-		data.push_back(str);
-
-	config.close();
-
-	for (int i = 0; i < data.size(); i++)
-	{
-		if (data[i].find(this->autosaveName) != std::string::npos)
-		{
-			if (data[i].find("true") != std::string::npos)
-			{
-				this->Enabled = true;
-				break;
-			}
-			this->Enabled = false;
-			break;
-		}
-	}
-	for (int i = 0; i < data.size(); i++)
-	{
-		if (data[i].find(this->slotName) != std::string::npos)
-		{
-			for (int x = 1; x < 9; x++)
-			{
-				if (data[i].find(std::to_string(x)) != std::string::npos)
-				{
-					this->slot = x;
-					break;
-				}
-			}
-		}
-	}
-	if (this->slot < 1 || this->slot > 8)
-		this->slot = 8;
+	if (slot < 1 || slot > 8)
+		slot = 8;
 }
 void Config::WriteConfig()
 {
 	std::ofstream config;
 	config.open(ConfigName);
-
-	for (int i = 0; i < sizeof(default_config); i++)
-	{
-		config << (char)default_config[i];
-	}
+	config << default_config;
 	config.close();
 }
 void Config::Initialise()
 {
-	ScriptedVehiclesRandomizer script;
-	script.Read();
+	if (!std::filesystem::exists(ConfigName))
+		WriteConfig();
 
-	RCVehiclesRandomizer rc;
-	rc.Read();
-		
-	ParkedVehiclesRandomizer parked;
-	parked.Read();
+	std::ifstream config;
+	config.open(ConfigName);
 
-	TrafficRandomizer traffic;
-	traffic.Read();
-
-	WeaponRandomizer weapons;
-	weapons.Read();
-
-	ColourRandomizer colours;
-	colours.Read();
-
-	VoiceLineRandomizer voice;
-	voice.Read();
-
-	Autosave autosave;
-	autosave.Read();
+	for (std::string str; std::getline(config, str); )
+	{
+		script.Read(str);
+		rc.Read(str);
+		parked.Read(str);
+		traffic.Read(str);
+		weapons.Read(str);
+		colours.Read(str);
+		autosave.Read(str);
+		voice.Read(str);
+		pickups.Read(str);
+		pager.Read(str);
+	}
 }

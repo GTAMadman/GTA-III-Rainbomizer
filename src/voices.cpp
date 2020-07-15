@@ -1,17 +1,11 @@
 #include "voices.h"
-#include <cstdint>
-#include <unordered_map>
-#include <algorithm>
-#include <cctype>
 
 struct MissionAudioData
 {
 	char* SoundName;
 	uint32_t SoundId;
 };
-
-
-std::unordered_map<std::string, std::string> subtitles{{
+std::unordered_map<std::string, std::string> voices::subtitles{ {
 	{"lib_a1", "ebal_a"},  {"lib_a2", "ebal_a1"}, {"lib_a", "ebal_b"},
 	{"lib_b", "ebal_d"},   {"lib_c", "ebal_g"},  {"lib_d", "lm1_9"},
 	{"l2_a", "lm3_5"},     {"j4t_1", "jm4_10"},  {"j4t_2", "jm4_11"},
@@ -36,55 +30,98 @@ std::unordered_map<std::string, std::string> subtitles{{
 	{"yd2_f", "yd2_g1"},   {"yd2_g", "yd2_g2"},  {"yd2_h", "yd2_h"},
 	{"yd2_ass", "yd2_n"},  {"yd2_ok", "yd2_l"},  {"h5_a", "hm5_1"},
 	{"h5_b", "hm5_5"},     {"h5_c", "hm5_6"},    {"c_1", "cat2_j"},
-}};
+} };
 
-MissionAudioData* MissionAudioNameSfxAssoc = (MissionAudioData*) 0x607094;
+MissionAudioData* MissionAudioNameSfxAssoc = (MissionAudioData*)0x607094;
 
 const int STREAMED_SOUND_MISSION_LIB_A1 = 0x5F;
 const int STREAMED_SOUND_MISSION_C1 = 0xC3;
 
-int voices::GetRandomizedMissionAudioSfx (const char* name)
-{	
-	int sound = Functions::RandomNumber(STREAMED_SOUND_MISSION_LIB_A1,
-				 STREAMED_SOUND_MISSION_C1);
+int voices::raySound;
 
-	char* newName = MissionAudioNameSfxAssoc
-		[sound - STREAMED_SOUND_MISSION_LIB_A1].SoundName;
+int voices::GetRandomizedMissionAudioSfx(const char* name)
+{
+	int sound = RandomNumber(STREAMED_SOUND_MISSION_LIB_A1,
+		STREAMED_SOUND_MISSION_C1);
 
-	std::string subtitle = subtitles.count(name) ? subtitles[name] : name;
-	std::transform(subtitle.begin(), subtitle.end(), subtitle.begin(),
-		       [](unsigned char c){ return std::tolower(c); });
-	
-	voiceLines[subtitle] = newName;
-	if (subtitles.count(newName))
-		voiceLines[subtitle] = subtitles[newName];
-	
+	if (Config::voice.MatchSubtitles)
+	{
+		// Payday For Ray matching subtitles fix
+		std::string str = name;
+		if (str == "a4_a" || str == "a4_b" || str == "a4_c" || str == "a4_d")
+			sound = raySound;
+
+		char* newName = MissionAudioNameSfxAssoc
+			[sound - STREAMED_SOUND_MISSION_LIB_A1].SoundName;
+
+		std::string subtitle = subtitles.count(name) ? subtitles[name] : name;
+		std::transform(subtitle.begin(), subtitle.end(), subtitle.begin(),
+			[](unsigned char c) { return std::tolower(c); });
+
+		voiceLines[subtitle] = "FEC_IBT"; // if not found, replaces text with -
+		if (subtitles.count(newName))
+			voiceLines[subtitle] = subtitles[newName];
+	}
 	return sound;
 }
-
 char* __fastcall voices::FixSubtitles(CText* text, void* edx, char* key)
 {
 	std::string _key = key;
 	std::transform(_key.begin(), _key.end(), _key.begin(),
-		       [](unsigned char c){ return std::tolower(c); });
-		
+		[](unsigned char c) { return std::tolower(c); });
+
 	if (voiceLines.count(_key)) {
 		std::string newKey = voiceLines[_key];
 		std::transform(newKey.begin(), newKey.end(), newKey.begin(),
-		       [](unsigned char c){ return std::toupper(c); });
+			[](unsigned char c) { return std::toupper(c); });
+
 		memcpy(key, newKey.c_str(), newKey.size());
 		key[newKey.size()] = '\0';
 	}
-	
-	return plugin::CallMethodAndReturn<char*, 0x52C5A0, CText *>(text, key);
+	return text->GetText(key);
+}
+char* __fastcall voices::FixPaydayForRaySubtitles(CText* text, void* edx, char* key)
+{
+	int sound = GetRandomizedMissionAudioSfx(key);
+
+	char* newName = MissionAudioNameSfxAssoc
+		[sound - STREAMED_SOUND_MISSION_LIB_A1].SoundName;
+
+	raySound = sound;
+
+	std::string subtitle = subtitles.count(newName) ? subtitles[newName] : newName;
+	std::transform(subtitle.begin(), subtitle.end(), subtitle.begin(),
+		[](unsigned char c) { return std::tolower(c); });
+
+	voiceLines[subtitle] = "FEC_IBT"; // if not found, replaces text with -
+	if (subtitles.count(newName))
+		voiceLines[subtitle] = subtitles[newName];
+
+	std::string _key = subtitle;
+	std::transform(_key.begin(), _key.end(), _key.begin(),
+		[](unsigned char c) { return std::tolower(c); });
+
+	if (voiceLines.count(_key)) {
+		std::string newKey = voiceLines[_key];
+		std::transform(newKey.begin(), newKey.end(), newKey.begin(),
+			[](unsigned char c) { return std::toupper(c); });
+
+		memcpy(key, newKey.c_str(), newKey.size());
+		key[newKey.size()] = '\0';
+	}
+	return text->GetText(key);
 }
 void voices::Initialise()
 {
-	if (Config::VoiceLineRandomizer::Enabled)
-		{
-			plugin::patch::RedirectCall(0x57955D, GetRandomizedMissionAudioSfx);
-			plugin::patch::RedirectCall(0x43D119, voices::FixSubtitles);
-		}
-}
+	if (Config::voice.Enabled)
+	{
+		plugin::patch::RedirectCall(0x57955D, GetRandomizedMissionAudioSfx);
 
+		if (Config::voice.MatchSubtitles)
+		{
+			plugin::patch::RedirectCall(0x43D119, FixSubtitles);
+			plugin::patch::RedirectCall(0x444745, FixPaydayForRaySubtitles);
+		}
+	}
+}
 std::unordered_map<std::string, std::string> voices::voiceLines;

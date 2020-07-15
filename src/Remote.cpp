@@ -8,13 +8,18 @@ void Remote::GivePlayerRCVehicle(float x, float y, float z, float angle, short m
 	newModel = scm::GetIDBasedOnPattern(modelId, x, y, z, CTheScripts::pActiveScripts->m_szName);
 
 	LoadModel(newModel);
+
+	if (!IsModelLoaded(newModel))
+		newModel = modelId;
+
 	CRemote::GivePlayerRemoteControlledCar(x, y, z, angle, newModel);
 }
 void Remote::Initialise()
 {
-	if (Config::RCVehiclesRandomizer::Enabled)
+	if (Config::rc.Enabled)
 	{
 		plugin::patch::RedirectCall(0x43E04A, GivePlayerRCVehicle);
+
 		if (scm::Patterns.size() == 0)
 			scm::InitialiseVehiclePatterns();
 	}

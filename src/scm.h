@@ -7,7 +7,6 @@
 #include "CRunningScript.h"
 #include "CTheScripts.h"
 #include "CVehicleModelInfo.h"
-
 #include "CBoat.h"
 #include "CPlane.h"
 #include "CHeli.h"
@@ -15,8 +14,9 @@
 class scm : Functions, ModelInfo
 {
 private:
-	static void __fastcall ScriptVehicleRandomizer(CRunningScript* thisScript, void* edx, int* arg0, short count);
-	static void __fastcall FixForcedPlayerVehicle(CRunningScript* thisScript, void* edx, int* arg0, short count);
+	static void __fastcall ScriptVehicleRandomizer(CRunningScript* script, void* edx, int* arg0, short count);
+	static void __fastcall FixForcedPlayerVehicle(CRunningScript* script, void* edx, int* arg0, short count);
+	static void* __fastcall RandomizeADITODeadDodo(CPlane* plane, void* edx, int model, char createdBy);
 	struct Pattern
 	{
 		int vehicle = 0;
