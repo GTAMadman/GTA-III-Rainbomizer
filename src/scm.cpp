@@ -1,9 +1,9 @@
 #include "scm.h"
 
 std::vector<scm::Pattern> scm::Patterns;
-void __fastcall scm::ScriptVehicleRandomizer(CRunningScript* thisScript, void* edx, int* arg0, short count)
+void __fastcall scm::ScriptVehicleRandomizer(CRunningScript* script, void* edx, int* arg0, short count)
 {
-	thisScript->CollectParameters(arg0, count);
+	script->CollectParameters(arg0, count);
 
 	int origModel = CTheScripts::ScriptParams[0].iParam;
 	int newModel = 0;
@@ -18,7 +18,7 @@ void __fastcall scm::ScriptVehicleRandomizer(CRunningScript* thisScript, void* e
 		newModel = origModel;
 
 	if (newModel != origModel)
-		newModel = GetIDBasedOnPattern(origModel, x, y, z, thisScript->m_szName);
+		newModel = GetIDBasedOnPattern(origModel, x, y, z, script->m_szName);
 
 	// Attempt to load the vehicle
 	LoadModel(newModel);
@@ -29,22 +29,48 @@ void __fastcall scm::ScriptVehicleRandomizer(CRunningScript* thisScript, void* e
 
 	CTheScripts::ScriptParams[0].iParam = newModel;
 }
-void __fastcall scm::FixForcedPlayerVehicle(CRunningScript* thisScript, void* edx, int* arg0, short count)
+void __fastcall scm::FixForcedPlayerVehicle(CRunningScript* script, void* edx, int* arg0, short count)
 {
-	thisScript->CollectParameters(arg0, count);
+	script->CollectParameters(arg0, count);
 	int origModel = CTheScripts::ScriptParams[1].iParam;
 
 	// Blow Fish Fix - Open the gate for any vehicle
-	if (thisScript->m_szName == (std::string)"fsh_gte" && origModel == 98)
+	if (script->m_szName == std::string("fsh_gte") && origModel == 98)
 	{ 
 		if (FindPlayerVehicle())
 			CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
 	}
+
+	if (Config::script.offroadEnabled)
+	{
+		if (origModel == 90 || origModel == 96 || origModel == 129)
+			if (FindPlayerVehicle())
+				CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+	}
+	if (Config::script.rcEnabled)
+	{
+		if (origModel == 149)
+			if (FindPlayerVehicle())
+				CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+	}
+}
+void* __fastcall scm::RandomizeADITODeadDodo(CPlane* plane, void* edx, int model, char createdBy)
+{
+	int newModel = GetIDBasedOnPattern(model, plane->GetPosition().x, plane->GetPosition().y,
+		plane->GetPosition().z, CTheScripts::pActiveScripts->m_szName);
+
+	LoadModel(newModel);
+
+	if (!IsModelLoaded(newModel))
+		newModel = model;
+
+	reinterpret_cast<CPlane*>(plane)->CPlane::CPlane(newModel, createdBy);
+	return plane;
 }
 void scm::InitialiseVehiclePatterns()
 {
 	/* General Patterns */
-	Pattern pattern = { .gVehicle = {"car"},. allowedType = {"car", "dodo"} };
+	Pattern pattern = { .gVehicle = {"car"}, .allowedType = {"car", "dodo"} };
 	Patterns.push_back(pattern);
 
 	pattern = { .gVehicle = {"boat"}, .allowedType = {"boat"} };
@@ -55,8 +81,9 @@ void scm::InitialiseVehiclePatterns()
 
 	/* Script Vehicle Patterns */
 
-	// Dead Dodo
-	pattern = { .vehicle = {DEAD_DODO_MODEL}, .allowed = {DEAD_DODO_MODEL} };
+	// Dead Dodo - A Drop In The Ocean
+	pattern = { .vehicle = {141}, .allowed = {141, 124, 125, 147}, .allowedType = {"car", "dodo", 
+	"boat", "rc"}, .thread = {"love3"} };
 	Patterns.push_back(pattern);
 
 	// Dodo
@@ -81,6 +108,16 @@ void scm::InitialiseVehiclePatterns()
 
 	// Perennial - Uzi Rider
 	pattern = { .vehicle = {94}, .allowed = {127}, .coords = {4, -310, 16}, .doors = {4} };
+	Patterns.push_back(pattern);
+
+	// The Crook
+	pattern = { .vehicle = {94}, .denied = {97, 98, 102, 118, 121, 122, 126}, 
+	.allowedType = {"car"}, .coords = {1190, -796, 13} };
+	Patterns.push_back(pattern);
+
+	// Dead Skunk In the Trunk
+	pattern = { .vehicle = {115}, .denied = {97, 98, 102, 118, 121, 122, 126},
+	.allowedType = {"car"}, .thread = {"joey5"} };
 	Patterns.push_back(pattern);
 
 	// The Thieves
@@ -108,18 +145,26 @@ void scm::InitialiseVehiclePatterns()
 	127, 130, 132, 133, 139, 144, 145, 146, 149}, .allowedType = {"car"}, .thread = {"kenji2"} };
 	Patterns.push_back(pattern); // Denied all larger vehicles
 
+	// Deal Steal
+	pattern = { .vehicle = {138}, .denied = {127}, .allowedType = {"car", "dodo"}, .thread = {"kenji3"} };
+	Patterns.push_back(pattern);
+
+	// Toyminator
+	pattern = { .vehicle = {118}, .denied = {122}, .allowedType = {"car", "dodo"}, .thread = {"hood2"} };
+	Patterns.push_back(pattern);
+
 	// Stallion - Don't Spank...
-	pattern = { .vehicle = {129}, .denied = {97, 98, 106, 116, 117, 122, 123}, .allowedType = {"car"},
-	.coords = { 1396, -837, -100 } };
+	pattern = { .vehicle = {129}, .denied = {93, 97, 98, 99, 104, 106, 113, 116, 117, 118, 121, 122, 123,
+	126, 127, 132, 133, 145, 146}, .allowedType = {"car"}, .coords = { 1396, -837, -100 } };
 	Patterns.push_back(pattern);
 
 	// Mike Lips' Last Lunch
-	pattern = { .vehicle = {91}, .denied = {93, 98, 104, 106, 113, 122, 123, 127, 132, 133, 145, 146},
+	pattern = { .vehicle = {91}, .denied = {93, 98, 104, 106, 113, 122, 123, 126, 127, 132, 133, 145, 146},
 	.allowedType = {"car"}, .coords = {1336, -460, -100} }; // Removed some large vehicles
 	Patterns.push_back(pattern);
 
 	// Cipriani's Chauffeur
-	pattern = { .vehicle = {134}, .denied = {93, 98, 104, 113, 122, 123, 127, 132, 133, 145, 146},
+	pattern = { .vehicle = {134}, .denied = {93, 98, 104, 113, 122, 123, 126, 127, 132, 133, 145, 146},
 	.allowedType = {"car"}, .coords = {1189, -864, 14} }; // Removed some large vehicles
 	Patterns.push_back(pattern);
 }
@@ -200,9 +245,7 @@ int scm::GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread)
 				}
 			}
 			if (vehicles.size() > 0)
-			{
 				return vehicles[RandomNumber(0, vehicles.size() - 1)];
-			}
 		}
 	}
 
@@ -244,7 +287,7 @@ std::vector<int> scm::ProcessVehicleTypes(Pattern pattern)
 				for (int model = 90; model < 151; model++)
 				{
 					if (CModelInfo::IsCarModel(model) && model != RC_BANDIT_MODEL && model != DODO_MODEL &&
-						model != DEAD_DODO_MODEL)
+						model != 141)
 						output.push_back(model);
 				}
 			}
@@ -270,10 +313,11 @@ std::vector<int> scm::ProcessVehicleTypes(Pattern pattern)
 }
 void scm::Initialise()
 {
-	if (Config::ScriptedVehiclesRandomizer::Enabled)
+	if (Config::script.Enabled)
 	{
 		plugin::patch::RedirectCall(0x43C47E, ScriptVehicleRandomizer);
 		plugin::patch::RedirectCall(0x43DA21, FixForcedPlayerVehicle);
+		plugin::patch::RedirectCall(0x54E1A8, RandomizeADITODeadDodo);
 		plugin::patch::SetChar(0x52CF7A, 1); // Unlock police vehicles
 
 		if (Patterns.size() == 0)
