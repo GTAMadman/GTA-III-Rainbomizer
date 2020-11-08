@@ -1,15 +1,19 @@
 Rainbomizer is a randomizer for Grand Theft Auto III.
 
 <img src="https://cdn.discordapp.com/attachments/651869008618061837/678350944890781739/r1outink.png">
+Logo created by Catmare
+
 
 ## Features
 
 - **Script Vehicle Randomizer**: Randomizes the vehicles you are given in missions. The randomizer makes sure that you get vehicles that are usable for the mission.
 - **RC Vehicles Randomizer**: Randomizes the vehicles you are given in the RC missions.
 - **Parked Vehicles Randomizer**: Randomizes cars which are found parked around the map.
-- **Colour Randomizer**: Randomizes the colours of various in-game elements, including cars, the HUD and markers.
+- **Colour Randomizer**: Randomizes the colours of various in-game elements, including cars, the HUD, markers, pickups, explosions and more!
 - **Traffic Randomizer**: Randomizes vehicles that spawn in traffic, including law enforcement vehicles.
 - **Weapon Randomizer**: Randomizes the weapons that are given to other peds throughout the game.
+- **Pickups Randomizer**: Randomizes pickups throughout the world, including pickups given to you by missions and dropped by peds.
+- **Pager Randomizer**: Randomizes messages received through the pager.
 - **Autosave**: Automatically creates a savegame in slot 8 upon completing a mission. The autosave slot can be changed in the config file.
 
 ## Supported Versions
@@ -37,7 +41,8 @@ More information about how to configure specific randomizers is provided in the 
 ## Installation
 
 1) Downgrade to 1.0 (download link available above)
-2) Put the ASI and CFG files into your GTA III directory.
+2) Download the latest version from the releases page: https://github.com/GTAMadman/GTA-III-Rainbomizer/releases
+3) Put the ASI and CFG files into your GTA III directory.
 
 - It is recommended to not use CLEO with this mod as it can prevent the autosave function from working properly.
 
@@ -59,6 +64,7 @@ More information about how to configure specific randomizers is provided in the 
 - [Fryterp23](https://www.twitch.tv/fryterp23) - Streaming and extensive testing of the mod
 - [Hugo_One](https://www.twitch.tv/hugo_one) - Streaming the mod
 - [SpeedyFolf](https://www.twitch.tv/speedyfolf) - Streaming and testing of the mod
+- [Vod_Crack](https://www.twitch.tv/vod_crack) - Streaming and testing of the mod
 
 ## Used Libraries
 

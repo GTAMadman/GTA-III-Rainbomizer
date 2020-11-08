@@ -7,7 +7,7 @@ void __fastcall Autosave::RequestAutosave(CRunningScript* script, void* edx, int
 
 	if (opcode == 78 && script->m_bIsMission && ShouldSave)
 	{
-		int slot = Config::Autosave::slot;
+		int slot = Config::autosave.slot;
 		bool inVehicle = FindPlayerPed()->m_bInVehicle;
 
 		script->m_bIsActive = false;
@@ -25,9 +25,9 @@ void __fastcall Autosave::RequestAutosave(CRunningScript* script, void* edx, int
 		FindPlayerPed()->m_bInVehicle = inVehicle;
 	}
 }
-void __fastcall Autosave::SetTotalNumberMissions(CRunningScript* thisScript, void* edx, int* arg0, short count)
+void __fastcall Autosave::IncreaseMissionsPassed(CRunningScript* script, void* edx, int* arg0, short count)
 {
-	thisScript->CollectParameters(arg0, count);
+	script->CollectParameters(arg0, count);
 	ShouldSave = true;
 }
 char* Autosave::MakeValidSaveName(int slot)
@@ -44,9 +44,9 @@ char Autosave::ProcessCommands0to99(CRunningScript* script, int opcode)
 }
 void Autosave::Initialise()
 {
-	if (Config::Autosave::Enabled)
+	if (Config::autosave.Enabled)
 	{
 		plugin::patch::RedirectCall(0x439552, RequestAutosave);
-		plugin::patch::RedirectCall(0x447D88, SetTotalNumberMissions);
+		plugin::patch::RedirectCall(0x447D88, IncreaseMissionsPassed);
 	}
 }

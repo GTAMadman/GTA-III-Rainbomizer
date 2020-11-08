@@ -19,8 +19,9 @@ private:
 	static int ChooseModelToLoad();
 	static void* RandomizeCarPeds(ePedType type, int model, CVector* posn);
 	static void* __fastcall FixTrafficVehicles(CVehicle* vehicle, void* edx, int model, char createdBy);
-	static int ChooseModel();
-	static int ChoosePoliceModel();
+	static int RandomizeTraffic();
+	static int RandomizePoliceTraffic();
+	static void* __fastcall RandomizeRoadblocks(CVehicle* vehicle, void* edx, int model, char createdBy);
 	static void FixEmptyPoliceCars(CVehicle* vehicle);
 	static void __fastcall PedExitCar(CPed* ped, void* edx);
 	static void __fastcall PedEnterCar(CPed* ped, void* edx);
@@ -28,6 +29,7 @@ private:
 	static void EnterCar(CPed* ped);
 	static void QuitEnteringCar(CPed* ped);
 	static void FixBoatSpawns(CEntity* entity);
+	static void FixBoatPeds(CPed* ped);
 public:
 	static void Initialise();
 };

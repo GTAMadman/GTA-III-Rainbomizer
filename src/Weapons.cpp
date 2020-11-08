@@ -24,11 +24,14 @@ int __fastcall Weapons::GiveRandomizedWeapon(CPed* ped, void* edx, int weapon, i
 	if (newWeapon == 0)
 		newWeapon = RandomNumber(1, 11);
 
+	int weaponModel = CWeaponInfo::GetWeaponInfo((eWeaponType)newWeapon)->m_nModelId;
+
 	// Load the weapon model before setting it
-	LoadModel(CWeaponInfo::GetWeaponInfo((eWeaponType)newWeapon)->m_nModelId);
+	if (!IsModelLoaded(weaponModel))
+		LoadModel(weaponModel);
 
 	ped->GiveWeapon((eWeaponType)newWeapon, ammo);
-	ped->m_nWepModelID = CWeaponInfo::GetWeaponInfo((eWeaponType)newWeapon)->m_nModelId;
+	ped->m_nWepModelID = weaponModel;
 
 	return newWeapon;
 }
@@ -40,6 +43,22 @@ void __fastcall Weapons::SetCurrentWeapon(CPed* ped, void* edx, int slot)
 		return;
 	}
 	ped->SetCurrentWeapon(GetWeaponSlotFromModelID(ped->m_nWepModelID));
+}
+void __fastcall Weapons::FixRoadblockPoliceWeapons(CPed* ped, void* edx, int slot)
+{
+	ClearWeapons(ped);
+	int weapon = 2;
+
+	LoadModel(CWeaponInfo::GetWeaponInfo((eWeaponType)weapon)->m_nModelId);
+
+	ped->GiveWeapon((eWeaponType)weapon, 1000);
+	ped->m_nWepModelID = CWeaponInfo::GetWeaponInfo((eWeaponType)weapon)->m_nModelId;
+
+	ped->SetCurrentWeapon(GetWeaponSlotFromModelID(ped->m_nWepModelID));
+}
+void Weapons::ClearWeapons(CPed* ped)
+{
+	plugin::CallMethod<0x4CFB70, CPed*>(ped);
 }
 void Weapons::InitialiseWeaponPatterns()
 {
@@ -143,7 +162,7 @@ int Weapons::GetWeaponSlotFromModelID(int modelID)
 }
 void Weapons::Initialise()
 {
-	if (Config::WeaponRandomizer::Enabled)
+	if (Config::weapons.Enabled)
 	{
 		// CPed::GiveWeapon
 		for (int weaponAddresses : { 0x4211CC, 0x421201, 0x427BDC, 0x430F5C, 0x431056,
@@ -158,6 +177,8 @@ void Weapons::Initialise()
 			0x4DB771, 0x4DD2AA, 0x4DD95C, 0x4DD971, 0x4E045B, 0x4E0AB6, 0x4E0F29,
 			0x4E147D, 0x4F2583, 0x4F5386, 0x4F5633, 0x4F59E9, 0x5875AA, 0x5883CF })
 			plugin::patch::RedirectCall(setWepAddresses, SetCurrentWeapon);
+
+		plugin::patch::RedirectCall(0x437951, FixRoadblockPoliceWeapons);
 
 		if (Patterns.size() == 0)
 			InitialiseWeaponPatterns();

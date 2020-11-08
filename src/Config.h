@@ -2,9 +2,8 @@
 #include "default_config.h"
 #include <fstream>
 #include <filesystem>
-#include <iterator>
-#include <string>
-#include <vector>
+#include <sstream>
+
 
 class Config
 {
@@ -12,61 +11,86 @@ private:
 	static std::string ConfigName;
 public:
 	static void Initialise();
-	struct ScriptedVehiclesRandomizer
+	static struct ScriptedVehiclesRandomizer
 	{
-		std::string Name = "ScriptVehiclesRandomizer";
-		static bool Enabled;
-		void Read();
-	};
-	struct RCVehiclesRandomizer
+		bool Enabled;
+		bool offroadEnabled;
+		bool rcEnabled;
+		void Read(const std::string& line);
+	} script;
+
+	static struct RCVehiclesRandomizer
 	{
-		std::string Name = "RandomizeRCVehicles";
-		static bool Enabled;
-		void Read();
-	};
-	struct ParkedVehiclesRandomizer
+		bool Enabled;
+		void Read(const std::string& line);
+	} rc;
+
+	static struct ParkedVehiclesRandomizer
 	{
-		std::string Name = "ParkedVehiclesRandomizer";
-		static bool Enabled;
-		void Read();
-	};
-	struct TrafficRandomizer
+		bool Enabled;
+		void Read(const std::string& line);
+	} parked;
+
+	static struct TrafficRandomizer
 	{
-		std::string Name = "TrafficRandomizer";
-		static bool Enabled;
-		void Read();
-	};
-	struct WeaponRandomizer
+		bool Enabled;
+		bool roadblocksEnabled;
+		bool deadDodo;
+		bool train;
+		bool airTrain;
+		void Read(const std::string& line);
+	} traffic;
+
+	static struct WeaponRandomizer
 	{
-		std::string Name = "WeaponRandomizer";
-		static bool Enabled;
-		void Read();
-	};
-	struct ColourRandomizer
+		bool Enabled;
+		void Read(const std::string& line);
+	} weapons;
+
+	static struct ColourRandomizer
 	{
-		std::string vehicleName = "RandomizeVehicleColours";
-		std::string textName = "RandomizeTextColours";
-		std::string rainbowTextName = "RainbowTextColours";
-		std::string markersName = "RandomizeMarkerColours";
-		static bool vehicleEnabled;
-		static bool textEnabled;
-		static bool rainbowTextEnabled;
-		static bool markersEnabled;
-		void Read();
-	};
-	struct VoiceLineRandomizer
+		bool vehicleEnabled;
+		bool textEnabled;
+		bool rainbowTextEnabled;
+		bool markersEnabled;
+		bool pickupsEnabled;
+		bool explosionsEnabled;
+		void Read(const std::string& line);
+	} colours;
+
+	static struct PickupsRandomizer
 	{
-		std::string Name = "VoiceLineRandomizer";
-		static bool Enabled;
-		void Read();
-	};
-	struct Autosave
+		bool Enabled;
+		bool randomizePedDrops;
+		bool weapons;
+		bool health;
+		bool armour;
+		bool adrenaline;
+		bool bribes;
+		bool briefcase;
+		void Read(const std::string& line);
+	} pickups;
+
+	static struct PagerRandomizer
 	{
-		std::string autosaveName = "Autosave =";
-		std::string slotName = "Slot";
-		static int slot;
-		static bool Enabled;
-		void Read();
-	};
+		bool Enabled;
+		bool allowSubtitlesEnabled;
+		void Read(const std::string& line);
+	} pager;
+
+	static struct VoiceLineRandomizer
+	{
+		bool Enabled;
+		bool MatchSubtitles;
+		void Read(const std::string& line);
+	} voice;
+
+	static struct Autosave
+	{
+		int slot = 8;
+		bool Enabled;
+		void Read(const std::string& line);
+	} autosave;
+
 	static void WriteConfig();
 };

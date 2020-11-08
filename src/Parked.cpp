@@ -3,22 +3,22 @@
 void __fastcall Parked::ParkedVehiclesRandomizer(CCarGenerator* gen)
 {
 	int oldModel = gen->m_nModelId;
-	int newModel = RandomNumber(90, 150);
+	int newModel;
 
-	while (ModelInfo::IsBlacklistedVehicle(newModel) || newModel == DEAD_DODO_MODEL)
-	{
-		newModel = RandomNumber(90, 150);
-	}
+	while ((newModel = RandomNumber(90, 150), ModelInfo::IsMiscVehicle(newModel) ||
+		ModelInfo::IsBlacklistedVehicle(newModel) || newModel == 142));
+
 	gen->m_nModelId = (eVehicleModel)newModel;
 
 	gen->DoInternalProcessing();
+	gen->m_nModelId = (eVehicleModel)oldModel;
 }
 void* __fastcall Parked::CarparkVehiclesRandomizer(CVehicle* vehicle, void* edx, int model, char createdBy)
 {
 	int newModel;
 
-	while ((newModel = ms_vehiclesLoaded[RandomNumber(0, CStreaming::ms_numVehiclesLoaded - 1)],
-		ModelInfo::IsBlacklistedVehicle(newModel) || newModel < 90 || newModel > 150 || newModel == DEAD_DODO_MODEL));
+	while ((newModel = GetRandomLoadedVehicle(),ModelInfo::IsMiscVehicle(newModel) || 
+		ModelInfo::IsBlacklistedVehicle(newModel) || newModel == 142 || newModel < 90 || newModel > 150));
 
 	#ifndef __GNUC__
 	if (CModelInfo::IsBoatModel(newModel))
@@ -41,7 +41,7 @@ void* __fastcall Parked::CarparkVehiclesRandomizer(CVehicle* vehicle, void* edx,
 }
 void Parked::Initialise()
 {
-	if (Config::ParkedVehiclesRandomizer::Enabled)
+	if (Config::parked.Enabled)
 	{
 		plugin::patch::RedirectCall(0x542BE3, ParkedVehiclesRandomizer);
 		plugin::patch::RedirectCall(0x44EE10, CarparkVehiclesRandomizer);

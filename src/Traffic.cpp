@@ -2,29 +2,27 @@
 
 int Traffic::ChooseModelToLoad()
 {
-	int newModel = RandomNumber(90, 150);
-
-	while (ModelInfo::IsBlacklistedVehicle(newModel))
-		newModel = RandomNumber(90, 150);
-
-	return newModel;
-}
-int Traffic::ChooseModel()
-{
 	int model;
-	while ((model = ms_vehiclesLoaded[RandomNumber(0, CStreaming::ms_numVehiclesLoaded - 1)], 
-		ModelInfo::IsBlacklistedVehicle(model) || model < 90 || model > 150));
-
-	if (!IsModelLoaded(model))
-		return -1;
+	while ((model = RandomNumber(90, 150), IsModelLoaded(model)));
 
 	return model;
 }
-int Traffic::ChoosePoliceModel()
+int Traffic::RandomizeTraffic()
 {
 	int model;
-	while ((model = ms_vehiclesLoaded[RandomNumber(0, CStreaming::ms_numVehiclesLoaded - 1)],
-		ModelInfo::IsBlacklistedVehicle(model) || model < 90 || model > 150));
+	while ((model = GetRandomLoadedVehicle(), ModelInfo::IsBlacklistedVehicle(model)) ||
+		model < 90 || model > 150);
+
+	if (!IsModelLoaded(model))
+		return 110;
+
+	return model;
+}
+int Traffic::RandomizePoliceTraffic()
+{
+	int model;
+	while ((model = GetRandomLoadedVehicle(), ModelInfo::IsMiscVehicle(model) ||
+		ModelInfo::IsBlacklistedVehicle(model)) || model < 90 || model > 150);
 
 	if (!IsModelLoaded(model))
 		return 116;
@@ -57,9 +55,47 @@ void* Traffic::RandomizeCarPeds(ePedType type, int model, CVector* posn)
 
 	return CPopulation::AddPed(type, model, posn);
 }
+void* __fastcall Traffic::RandomizeRoadblocks(CVehicle* vehicle, void* edx, int model, char createdBy)
+{
+	int newModel;
+	while ((newModel = GetRandomLoadedVehicle()), ModelInfo::IsMiscVehicle(newModel) ||
+		ModelInfo::IsBlacklistedVehicle(newModel));
+
+	if (!IsModelLoaded(newModel))
+		newModel = model;
+
+	if (CModelInfo::IsBoatModel(newModel))
+		reinterpret_cast<CBoat*>(vehicle)->CBoat::CBoat(newModel, createdBy);
+
+	if (CModelInfo::IsPlaneModel(newModel))
+		reinterpret_cast<CPlane*>(vehicle)->CPlane::CPlane(newModel, createdBy);
+
+	if (CModelInfo::IsHeliModel(newModel))
+		reinterpret_cast<CHeli*>(vehicle)->CHeli::CHeli(newModel, createdBy);
+
+	if (CModelInfo::IsTrainModel(newModel))
+		reinterpret_cast<CTrain*>(vehicle)->CTrain::CTrain(newModel, createdBy);
+
+	if (CModelInfo::IsCarModel(newModel))
+		reinterpret_cast<CAutomobile*>(vehicle)->CAutomobile::CAutomobile(newModel, createdBy);
+
+	vehicle->m_nState = eEntityStatus::STATUS_PHYSICS;
+
+	return vehicle;
+}
 void* __fastcall Traffic::FixTrafficVehicles(CVehicle* vehicle, void* edx, int model, char createdBy)
 {
 	#ifndef __GNUC__
+	if (ModelInfo::IsMiscVehicle(model))
+	{
+		reinterpret_cast<CBoat*>(vehicle)->CBoat::CBoat(model, createdBy);
+
+		// Give train and Dead Dodo more health to stop them from instantly exploding
+		if (model == 124 || model == 141)
+			vehicle->m_fHealth = 10000;
+
+		return vehicle;
+	}
 	if (CModelInfo::IsBoatModel(model))
 		reinterpret_cast<CBoat*>(vehicle)->CBoat::CBoat(model, createdBy);
 	
@@ -86,6 +122,10 @@ void Traffic::FixEmptyPoliceCars(CVehicle* vehicle)
 	CCarAI::AddPoliceCarOccupants(vehicle);
 	vehicle->m_nModelIndex = origModel;
 }
+void __fastcall Traffic::PedEnterCar(CPed* ped, void* edx)
+{
+	ped->m_pVehicle->m_nModelIndex == ModelInfo::RC_BANDIT_MODEL ? QuitEnteringCar(ped) : EnterCar(ped);
+}
 void __fastcall Traffic::PedExitCar(CPed* ped, void* edx)
 {
 	if (ped->m_pVehicle->m_nModelIndex == RC_BANDIT_MODEL)
@@ -97,17 +137,15 @@ void __fastcall Traffic::PedExitCar(CPed* ped, void* edx)
 	else
 		ExitCar(ped);
 }
-void __fastcall Traffic::PedEnterCar(CPed* ped, void* edx)
-{
-	ped->m_pVehicle->m_nModelIndex == RC_BANDIT_MODEL ? QuitEnteringCar(ped) : EnterCar(ped);
-}
 void Traffic::FixBoatSpawns(CEntity* entity)
 {
-	if (CModelInfo::IsBoatModel(entity->m_nModelIndex))
+	if (CModelInfo::IsBoatModel(entity->m_nModelIndex) || ModelInfo::IsEmergencyVehicle(entity->m_nModelIndex)
+		&& entity->m_nModelIndex != 97) // Don't need to give Firetuck's real physics
 		entity->m_nState = eEntityStatus::STATUS_PHYSICS;
 
 	CWorld::Add(entity);
 }
+void Traffic::FixBoatPeds(CPed* ped){}
 void Traffic::ExitCar(CPed* ped)
 {
 	plugin::Call<0x4E18D0>(ped);
@@ -122,17 +160,21 @@ void Traffic::QuitEnteringCar(CPed* ped)
 }
 void Traffic::Initialise()
 {
-	if (Config::TrafficRandomizer::Enabled)
+	if (Config::traffic.Enabled)
 	{
-		plugin::patch::RedirectCall(0x4167DB, ChooseModel);
-		plugin::patch::RedirectCall(0x4167AD, ChoosePoliceModel);
-		plugin::patch::RedirectCall(0x417FDE, ChoosePoliceModel);
+		plugin::patch::RedirectCall(0x4167DB, RandomizeTraffic);
+		plugin::patch::RedirectCall(0x4167AD, RandomizePoliceTraffic);
+		plugin::patch::RedirectCall(0x417FDE, RandomizePoliceTraffic);
 		plugin::patch::RedirectCall(0x40AFF2, ChooseModelToLoad);
 		plugin::patch::RedirectCall(0x4F59CD, RandomizeCarPeds);
 		plugin::patch::RedirectCall(0x416C9E, FixTrafficVehicles);
 		plugin::patch::RedirectCall(0x417CE8, FixEmptyPoliceCars);
-		plugin::patch::RedirectCall(0x4B1EDB, PedExitCar);
 		plugin::patch::RedirectCall(0x4B1EBB, PedEnterCar);
+		plugin::patch::RedirectCall(0x4B1EDB, PedExitCar);
 		plugin::patch::RedirectCall(0x417CD7, FixBoatSpawns);
+		plugin::patch::RedirectCall(0x4DB1F2, FixBoatPeds);
+
+		if (Config::traffic.roadblocksEnabled)
+			plugin::patch::RedirectCall(0x43749C, RandomizeRoadblocks);
 	}
 }

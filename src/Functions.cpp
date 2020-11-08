@@ -4,6 +4,10 @@ int* Functions::ms_vehiclesLoaded = reinterpret_cast<int*>(0x773560);
 /* Initialised the random engine and given it a seed */
 std::mt19937 Functions::rngEngine{ (unsigned int)time(0) };
 
+char* Functions::CText::GetText(const char* key)
+{
+	return plugin::CallMethodAndReturn<char*, 0x52C5A0, CText*>(this, key);
+}
 bool Functions::DoCoordinatesMatch(int x1, int y1, int z1, int x2, int y2, int z2)
 {
 	return x1 == x2 && y1 == y2 && z1 == z2;
@@ -22,8 +26,16 @@ bool Functions::IsModelLoaded(int modelID)
 		return true;
 	return false;
 }
-int Functions::RandomNumber(unsigned int min, unsigned int max)
+int Functions::GetNumberOfVehiclesLoaded()
 {
-	std::uniform_int_distribution<int> random(min, max);
+	return *ms_vehiclesLoaded;
+}
+int Functions::GetRandomLoadedVehicle()
+{
+	return ms_vehiclesLoaded[RandomNumber(0, CStreaming::ms_numVehiclesLoaded - 1)];
+}
+int Functions::RandomNumber(int min, int max)
+{
+	std::uniform_int_distribution random(min, max);
 	return random(rngEngine);
 }
