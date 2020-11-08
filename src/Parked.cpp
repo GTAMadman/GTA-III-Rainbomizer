@@ -18,8 +18,9 @@ void* __fastcall Parked::CarparkVehiclesRandomizer(CVehicle* vehicle, void* edx,
 	int newModel;
 
 	while ((newModel = ms_vehiclesLoaded[RandomNumber(0, CStreaming::ms_numVehiclesLoaded - 1)],
-		ModelInfo::IsBlacklistedVehicle(newModel) || newModel < 90 || newModel > 150 || newModel == ModelInfo::DEAD_DODO_MODEL));
+		ModelInfo::IsBlacklistedVehicle(newModel) || newModel < 90 || newModel > 150 || newModel == DEAD_DODO_MODEL));
 
+	#ifndef __GNUC__
 	if (CModelInfo::IsBoatModel(newModel))
 		reinterpret_cast<CBoat*>(vehicle)->CBoat::CBoat(newModel, createdBy);
 
@@ -34,6 +35,7 @@ void* __fastcall Parked::CarparkVehiclesRandomizer(CVehicle* vehicle, void* edx,
 
 	if (CModelInfo::IsCarModel(newModel))
 		reinterpret_cast<CAutomobile*>(vehicle)->CAutomobile::CAutomobile(newModel, createdBy);
+	#endif
 
 	return vehicle;
 }

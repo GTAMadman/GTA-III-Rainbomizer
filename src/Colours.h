@@ -20,7 +20,7 @@ private:
 	static int GetColour(int pattern, int rgb);
 	static CRGBA GetRainbowColour(int r, int g, int b);
 	static void HSVtoRGB(int H, double S, double V, int output[3]);
-	static struct Pattern
+	struct Pattern
 	{
 		int ID;
 		int colours[3];

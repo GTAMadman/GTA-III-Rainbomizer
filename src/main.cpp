@@ -5,6 +5,7 @@
 #include "Traffic.h"
 #include "Weapons.h"
 #include "Colours.h"
+#include "Missions.h"
 #include "voices.h"
 #include "Autosave.h"
 #include "Config.h"
@@ -12,14 +13,15 @@
 class Rainbomizer {
 public:
 	Rainbomizer() {
-		Config::Initialise();
-		scm::Initialise();
-		Remote::Initialise();
-		Parked::Initialise();
-		Traffic::Initialise();
-		Weapons::Initialise();
-		Colours::Initialise();
-		voices::Initialise();
-		Autosave::Initialise();
+		// Config::Initialise();
+		// scm::Initialise();
+		// Remote::Initialise();
+		// Parked::Initialise();
+		// Traffic::Initialise();
+		// Weapons::Initialise();
+		// Colours::Initialise();
+		// voices::Initialise();
+		// Autosave::Initialise();
+		Missions::Initialise();
     }
 } rainbomizer;

@@ -3,18 +3,18 @@
 std::string Config::ConfigName = "Rainbomizer.cfg";
 
 /* Annoyingly messy initialisers */
-bool Config::ScriptedVehiclesRandomizer::Enabled;
-bool Config::ParkedVehiclesRandomizer::Enabled;
-bool Config::RCVehiclesRandomizer::Enabled;
-bool Config::TrafficRandomizer::Enabled;
-bool Config::WeaponRandomizer::Enabled;
-bool Config::ColourRandomizer::vehicleEnabled;
-bool Config::ColourRandomizer::textEnabled;
-bool Config::ColourRandomizer::rainbowTextEnabled;
-bool Config::ColourRandomizer::markersEnabled;
-bool Config::VoiceLineRandomizer::Enabled;
-bool Config::Autosave::Enabled;
-int Config::Autosave::slot;
+bool Config::ScriptedVehiclesRandomizer::Enabled = true;
+bool Config::ParkedVehiclesRandomizer::Enabled = true;
+bool Config::RCVehiclesRandomizer::Enabled = true;
+bool Config::TrafficRandomizer::Enabled = true;
+bool Config::WeaponRandomizer::Enabled = true;
+bool Config::ColourRandomizer::vehicleEnabled = true;
+bool Config::ColourRandomizer::textEnabled = true;
+bool Config::ColourRandomizer::rainbowTextEnabled = true;
+bool Config::ColourRandomizer::markersEnabled = true;
+bool Config::VoiceLineRandomizer::Enabled = true;
+bool Config::Autosave::Enabled = true;
+int Config::Autosave::slot = true;
 
 /* Probably not the best way to read from and write to the config, but it works for now */
 void Config::ScriptedVehiclesRandomizer::Read()

@@ -59,6 +59,7 @@ void* Traffic::RandomizeCarPeds(ePedType type, int model, CVector* posn)
 }
 void* __fastcall Traffic::FixTrafficVehicles(CVehicle* vehicle, void* edx, int model, char createdBy)
 {
+	#ifndef __GNUC__
 	if (CModelInfo::IsBoatModel(model))
 		reinterpret_cast<CBoat*>(vehicle)->CBoat::CBoat(model, createdBy);
 	
@@ -73,6 +74,7 @@ void* __fastcall Traffic::FixTrafficVehicles(CVehicle* vehicle, void* edx, int m
 
 	if (CModelInfo::IsCarModel(model))
 		reinterpret_cast<CAutomobile*>(vehicle)->CAutomobile::CAutomobile(model, createdBy);
+	#endif
 
 	return vehicle;
 }
@@ -86,7 +88,7 @@ void Traffic::FixEmptyPoliceCars(CVehicle* vehicle)
 }
 void __fastcall Traffic::PedExitCar(CPed* ped, void* edx)
 {
-	if (ped->m_pVehicle->m_nModelIndex == ModelInfo::RC_BANDIT_MODEL)
+	if (ped->m_pVehicle->m_nModelIndex == RC_BANDIT_MODEL)
 	{
 		// Teleporting the ped out crashes, so I just remove them :P
 		ped->m_bInVehicle = false;
@@ -97,7 +99,7 @@ void __fastcall Traffic::PedExitCar(CPed* ped, void* edx)
 }
 void __fastcall Traffic::PedEnterCar(CPed* ped, void* edx)
 {
-	ped->m_pVehicle->m_nModelIndex == ModelInfo::RC_BANDIT_MODEL ? QuitEnteringCar(ped) : EnterCar(ped);
+	ped->m_pVehicle->m_nModelIndex == RC_BANDIT_MODEL ? QuitEnteringCar(ped) : EnterCar(ped);
 }
 void Traffic::FixBoatSpawns(CEntity* entity)
 {

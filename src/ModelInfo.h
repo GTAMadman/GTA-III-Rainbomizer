@@ -3,12 +3,13 @@
 #include "CModelInfo.h"
 #include <string>
 
+const int RC_BANDIT_MODEL = 131;
+const int DODO_MODEL = 126;
+const int DEAD_DODO_MODEL = 141;
+
 class ModelInfo
 {
 public:
-	static const int RC_BANDIT_MODEL = 131;
-	static const int DODO_MODEL = 126;
-	static const int DEAD_DODO_MODEL = 141;
 	static bool IsBlacklistedVehicle(int modelID);
 	static std::string CheckVehicleModel(int modelID);
 };

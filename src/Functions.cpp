@@ -6,9 +6,7 @@ std::mt19937 Functions::rngEngine{ (unsigned int)time(0) };
 
 bool Functions::DoCoordinatesMatch(int x1, int y1, int z1, int x2, int y2, int z2)
 {
-	if (x1 == x2 && y1 == y2 && z1 == z2)
-		return true;
-	return false;
+	return x1 == x2 && y1 == y2 && z1 == z2;
 }
 void Functions::LoadModel(int modelID)
 {
