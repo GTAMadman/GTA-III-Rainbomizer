@@ -32,7 +32,7 @@ set_target_properties(
   plugin_vc plugin_sa
   PROPERTIES EXCLUDE_FROM_ALL true)
 
-file(GLOB_RECURSE SOURCES src/*.cpp)
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
 
 add_library("gta3_rbmzr" SHARED ${SOURCES})
 

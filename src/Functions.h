@@ -6,6 +6,7 @@
 #include <ctime>
 #include <random>
 
+
 class Functions
 {
 private:
@@ -22,4 +23,21 @@ public:
 	{
 		char* GetText(const char* key);
 	};
+	static void TeleportPlayer (CVector& vector);
+
+	template <typename T> static auto &GetRandomElement (T &container)
+	{
+		auto it = std::begin (container);
+		std::advance (it, RandomNumber (0, std::size (container) - 1));
+
+		return *it;
+	}
+
+	template <typename T, typename V>
+	static bool DoesElementExist (const T &container, const V val)
+	{
+		return std::find (std::begin (container), std::end (container),
+				  val)
+		       != std::end (container);
+	}
 };

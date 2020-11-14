@@ -39,3 +39,11 @@ int Functions::RandomNumber(int min, int max)
 	std::uniform_int_distribution random(min, max);
 	return random(rngEngine);
 }
+void Functions::TeleportPlayer (CVector& pos)
+{
+	CStreaming::StreamZoneModels(pos);
+	CStreaming::LoadScene(pos);
+	CStreaming::LoadAllRequestedModels(false);
+	
+	FindPlayerEntity ()->SetPosition (pos);
+}

@@ -11,11 +11,13 @@
 #include "Pager.h"
 #include "Autosave.h"
 #include "Config.h"
+#include "Cutscenes.h"
 
 class Rainbomizer {
 public:
 	Rainbomizer() {
 		Missions::Initialise();
+		Cutscenes::Initialise();
 		Config::Initialise();
 		scm::Initialise();
 		Remote::Initialise();

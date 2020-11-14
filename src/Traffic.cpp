@@ -64,6 +64,7 @@ void* __fastcall Traffic::RandomizeRoadblocks(CVehicle* vehicle, void* edx, int 
 	if (!IsModelLoaded(newModel))
 		newModel = model;
 
+	#ifndef __GNUC__
 	if (CModelInfo::IsBoatModel(newModel))
 		reinterpret_cast<CBoat*>(vehicle)->CBoat::CBoat(newModel, createdBy);
 
@@ -78,7 +79,8 @@ void* __fastcall Traffic::RandomizeRoadblocks(CVehicle* vehicle, void* edx, int 
 
 	if (CModelInfo::IsCarModel(newModel))
 		reinterpret_cast<CAutomobile*>(vehicle)->CAutomobile::CAutomobile(newModel, createdBy);
-
+	#endif
+	
 	vehicle->m_nState = eEntityStatus::STATUS_PHYSICS;
 
 	return vehicle;

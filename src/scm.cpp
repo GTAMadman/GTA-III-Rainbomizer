@@ -64,7 +64,9 @@ void* __fastcall scm::RandomizeADITODeadDodo(CPlane* plane, void* edx, int model
 	if (!IsModelLoaded(newModel))
 		newModel = model;
 
+	#ifndef __GNUC__
 	reinterpret_cast<CPlane*>(plane)->CPlane::CPlane(newModel, createdBy);
+	#endif
 	return plane;
 }
 void scm::InitialiseVehiclePatterns()
