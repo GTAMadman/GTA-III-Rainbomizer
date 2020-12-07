@@ -8,6 +8,9 @@
 #include <iostream>
 #include <CFont.h>
 #include <extensions/ScriptCommands.h>
+#include <CPedType.h>
+#include <random>
+#include <CWaterCannons.h>
 
 std::map<int, std::vector<Missions::MissionEndOffset>> gMissionEndOffsets
 	= {{15, {{4382}}},
@@ -145,17 +148,11 @@ std::map<int, CVector> gMissionStartCoords = {
 	{76, {-443.5, -6.0625, 3.75}},        {77, {-443.5, -6.0625, 3.75}},
 	{78, {-443.5, -6.0625, 3.75}},        {79, {-362.75, 246.5, 60.0}}};
 
-const int START_MISSIONS      = 15;
-const int END_MISSIONS        = 79;
 const int SIZE_MAIN_SCRIPT    = 0x20000;
 
 int Missions::GetRandomMission ()
 {
-	do
-		{
-			mRandomizedMission = Functions::RandomNumber(START_MISSIONS, END_MISSIONS);
-		}
-	while (!gMissionEndOffsets.count(mRandomizedMission));
+	mRandomizedMission = mMissionOrder[mOriginalMission];
 	mStoreNextScript = true;
 	return mRandomizedMission;
 }
@@ -165,19 +162,23 @@ void __fastcall Missions::RandomizeMissionToStart (CRunningScript* script, void*
 	script->CollectParameters(arg0, count);
 	int& missionId = CTheScripts::ScriptParams[0].iParam;
 
-        if (missionId >= START_MISSIONS && missionId <= END_MISSIONS &&
-	    gMissionEndOffsets.count(missionId))
+	if (missionId >= START_MISSIONS && missionId <= END_MISSIONS
+	    && gMissionEndOffsets.count (missionId))
 		{
 			mOriginalMission = missionId;
-			missionId = GetRandomMission ();
-			std::cout << "Storing mission: " <<  missionId << std::endl;
-		}
+			missionId	 = GetRandomMission ();
+			std::cout << "Storing mission: " << missionId
+				  << std::endl;
 
-	try
-		{
-			TeleportPlayer(gMissionStartCoords.at(mRandomizedMission));
+			try
+				{
+					TeleportPlayer (gMissionStartCoords.at (
+						mRandomizedMission));
+				}
+			catch (...)
+				{
+				}
 		}
-	catch (...) {}
 }
 
 CRunningScript *Missions::StoreRandomizedScript (uint32_t ip)
@@ -309,10 +310,52 @@ char __fastcall Missions::JumpOnMissionEnd (CRunningScript* thread)
 	return thread->ProcessOneCommand();
 }
 
-std::ostream& operator<<(std::ostream& os, const CVector& vec)
+void Missions::LoadMissionData (uint8_t *data, uint32_t size)
 {
-	os << vec.x << ", " << vec.y << ", " << vec.z;
-	return os;
+	CPedType::Load (data, size);
+	SaveStructure *save
+		= reinterpret_cast<SaveStructure *> (
+			data + size - sizeof (SaveStructure));
+
+	if (std::string (save->signature, 11) != "RAINBOMIZER")
+		return InitShuffledMissionOrder (nullptr);
+	return InitShuffledMissionOrder (save);
+}
+
+void Missions::InitShuffledMissionOrder (Missions::SaveStructure* structure)
+{
+	uint32_t seed = RandomNumber (INT_MIN, INT_MAX);
+	if (structure)
+		seed = structure->randomSeed;
+
+	std::mt19937 engine{seed};
+	std::uniform_int_distribution<int> d(START_MISSIONS, END_MISSIONS);
+
+	mMissionOrder.Reset ();
+	for (int i = START_MISSIONS; i <= END_MISSIONS; i++)
+		std::swap (mMissionOrder[i], mMissionOrder[d(engine)]);
+		
+	mSaveStructure.randomSeed = seed;
+}
+
+void Missions::MissionOrder::Reset ()
+{
+	for (int i = 0; i < TOTAL_MISSIONS; i++)
+		Missions[i] = START_MISSIONS + i;
+}
+
+void Missions::InitAtNewGame ()
+{
+	CWaterCannons::Init();
+	InitShuffledMissionOrder (nullptr);
+}
+
+void Missions::SaveMissionData (uint8_t* data, uint32_t& outSize)
+{
+	CPedType::Save(data, &outSize);
+
+	memcpy (data + outSize, &mSaveStructure, sizeof(SaveStructure));
+	outSize += sizeof(SaveStructure);
 }
 
 void
@@ -321,6 +364,11 @@ Missions::Initialise()
 	plugin::patch::RedirectCall(0x588DE8, RandomizeMissionToStart);
 	plugin::patch::RedirectCall(0x588E47, StoreRandomizedScript);
 	plugin::patch::RedirectCall(0x439485, JumpOnMissionEnd);
+	plugin::patch::RedirectCall(0x591883, LoadMissionData);
+	plugin::patch::RedirectCall(0x59087A, SaveMissionData);
+	plugin::patch::RedirectCall(0x48C5BC, InitAtNewGame);
+
+	printf("%p\n", mSaveStructure);
 	
 	mTempMissionData = std::make_unique<unsigned char[]>(SIZE_MISSION_SCRIPT);
 	mLocalVariables = std::make_unique<unsigned int[]>(16);

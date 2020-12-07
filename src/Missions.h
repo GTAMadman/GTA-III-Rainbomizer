@@ -8,6 +8,9 @@
 class CRunningScript;
 
 const int SIZE_MISSION_SCRIPT = 0x8000;
+const int START_MISSIONS      = 15;
+const int END_MISSIONS        = 79;
+const int TOTAL_MISSIONS      = END_MISSIONS - START_MISSIONS + 1;
 
 class Missions : Functions
 {
@@ -18,6 +21,37 @@ public:
 		int End = -1;
 	};	
 private:
+
+	struct SaveStructure
+	{
+		char signature[12] = "RAINBOMIZER";
+		unsigned int randomSeed;
+		
+		SaveStructure ()
+		{
+			memcpy (signature, "RAINBOMIZER", 12);
+		};
+	};
+
+	struct MissionOrder
+	{
+		int Missions[TOTAL_MISSIONS];
+
+		MissionOrder () { Reset (); }
+		
+		inline int& operator [] (int index)
+		{
+			if (index < START_MISSIONS || index > END_MISSIONS)
+				return Missions[START_MISSIONS];
+			
+			return Missions[index - START_MISSIONS];
+		};
+		
+		void Reset ();
+	};
+	
+	inline static SaveStructure mSaveStructure;
+	inline static MissionOrder mMissionOrder;
 	
 	inline static int mOriginalMission = -1;
 	inline static int mRandomizedMission = -1;
@@ -32,6 +66,7 @@ private:
 	inline static std::unique_ptr<unsigned int[]> mLocalVariables;
 
 	static void TeleportPlayerAfterMission ();
+	static void InitShuffledMissionOrder (SaveStructure*);
 	
 	static bool ShouldJump (CRunningScript*);
 	
@@ -47,6 +82,10 @@ private:
 	static bool ProcessPreReplaceMissionEndOffsets (CRunningScript*, short opcode);
 	static bool ProcessPostReplaceMissionEndOffsets (CRunningScript*, uint16_t &opcode);
 	static void HandleEndThreadOpcode (CRunningScript*, short opcode);
+
+	static void LoadMissionData (uint8_t* data, uint32_t size);
+	static void SaveMissionData (uint8_t* data, uint32_t& size);
+	static void InitAtNewGame ();
 	
 public:
 	static void Initialise();

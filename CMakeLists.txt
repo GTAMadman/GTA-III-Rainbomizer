@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.11)
-project(III-Rainbomizer)
+project(III.Rainbomizer)
 
 set (CMAKE_CXX_STANDARD 17)
 
@@ -34,9 +34,9 @@ set_target_properties(
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
 
-add_library("gta3_rbmzr" SHARED ${SOURCES})
+add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
-set_target_properties("gta3_rbmzr" PROPERTIES SUFFIX ".asi")
-target_link_libraries("gta3_rbmzr" PUBLIC plugin_III)
-target_compile_definitions("gta3_rbmzr" PUBLIC NOMINMAX)
+set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".asi")
+target_link_libraries(${PROJECT_NAME} PUBLIC plugin_III)
+target_compile_definitions(${PROJECT_NAME} PUBLIC NOMINMAX)
 
