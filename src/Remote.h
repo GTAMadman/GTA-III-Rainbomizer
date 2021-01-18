@@ -2,7 +2,7 @@
 #include "plugin.h"
 #include "Functions.h"
 #include "Config.h"
-#include "scm.h"
+#include "Script.h"
 #include "CRemote.h"
 #include "CTheScripts.h"
 
@@ -11,5 +11,5 @@ class Remote : Functions
 public:
 	static void Initialise();
 private:
-	static void GivePlayerRCVehicle(float x, float y, float z, float angle, short modelId);
+	static void GivePlayerRandomRCVehicle(float x, float y, float z, float angle, short modelId);
 };

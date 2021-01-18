@@ -13,7 +13,12 @@ void __fastcall Autosave::RequestAutosave(CRunningScript* script, void* edx, int
 		script->m_bIsActive = false;
 
 		if (FindPlayerVehicle())
+		{
+			if (Config::mission.Enabled) // Fix end of mission teleporting in vehicles
+				FindPlayerPed()->Teleport(FindPlayerEntity()->GetPosition());
+
 			FindPlayerPed()->m_bInVehicle = false;
+		}
 
 		char* file = MakeValidSaveName(slot - 1);
 		int handle = CFileMgr::OpenFile(file, "wb");
@@ -28,7 +33,9 @@ void __fastcall Autosave::RequestAutosave(CRunningScript* script, void* edx, int
 void __fastcall Autosave::IncreaseMissionsPassed(CRunningScript* script, void* edx, int* arg0, short count)
 {
 	script->CollectParameters(arg0, count);
-	ShouldSave = true;
+
+	if (script->m_szName != std::string("usj"))
+		ShouldSave = true;
 }
 char* Autosave::MakeValidSaveName(int slot)
 {
@@ -49,4 +56,8 @@ void Autosave::Initialise()
 		plugin::patch::RedirectCall(0x439552, RequestAutosave);
 		plugin::patch::RedirectCall(0x447D88, IncreaseMissionsPassed);
 	}
+
+	// Put this here for now
+	if (Config::general.replays)
+		plugin::patch::Nop(0x48C975, 5);
 }

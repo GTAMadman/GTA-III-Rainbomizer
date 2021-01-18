@@ -20,7 +20,7 @@ void __fastcall Pager::RandomizePagerMessages(CText* text, void* edx, char* key)
 }
 void Pager::AddSubtitleKeys()
 {
-	for (auto& key : voices::subtitles)
+	for (auto& key : Voices::subtitles)
 	{
 		std::transform(key.second.begin(), key.second.end(), key.second.begin(),
 			[](unsigned char c) { return std::toupper(c); });

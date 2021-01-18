@@ -1,4 +1,5 @@
 #include "Functions.h"
+#include "extensions\ScriptCommands.h"
 
 int* Functions::ms_vehiclesLoaded = reinterpret_cast<int*>(0x773560);
 /* Initialised the random engine and given it a seed */
@@ -28,6 +29,12 @@ bool Functions::IsModelLoaded(int modelID)
 		return true;
 	return false;
 }
+void Functions::PlayRandomRadioStation()
+{
+	gMusicManager.ChangeMusicMode(2);
+	gMusicManager.PreloadCutSceneMusic(RandomNumber(0, 7));
+	gMusicManager.PlayPreloadedCutSceneMusic();
+}
 int Functions::GetNumberOfVehiclesLoaded()
 {
 	return *ms_vehiclesLoaded;
@@ -36,8 +43,33 @@ int Functions::GetRandomLoadedVehicle()
 {
 	return ms_vehiclesLoaded[RandomNumber(0, CStreaming::ms_numVehiclesLoaded - 1)];
 }
+std::string Functions::GetRainbomizerDir()
+{
+	return std::string(plugin::paths::GetGameDirPathA()) + "rainbomizer/";
+}
+bool Functions::IsRampageRunning()
+{
+	if (injector::ReadMemory<short>(0x95CCB4) == 1)
+		return true;
+
+	return false;
+}
 int Functions::RandomNumber(int min, int max)
 {
 	std::uniform_int_distribution random(min, max);
 	return random(rngEngine);
+}
+void Functions::TeleportPlayer(CVector& pos, eLevelName level)
+{
+	CStreaming::ms_disableStreaming = 0;
+
+	CGame::currLevel = level;
+	CCollision::SortOutCollisionAfterLoad();
+	CStreaming::RequestIslands(level);
+
+	CStreaming::StreamZoneModels(pos);
+	CStreaming::LoadScene(pos);
+	CStreaming::LoadAllRequestedModels(false);
+
+	FindPlayerEntity()->Teleport(pos);
 }

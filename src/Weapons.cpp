@@ -70,11 +70,11 @@ void Weapons::InitialiseWeaponPatterns()
 	Patterns.push_back(pattern);
 
 	// Gone Fishing
-	pattern = { .weapon = {11}, .allowed = {11}, .pedID = {7} };
+	pattern = { .weapon = {11}, .allowed = {11}, .thread = {"ray4"} };
 	Patterns.push_back(pattern);
 
 	// Rumble
-	pattern = { .weapon = {1}, .allowed = {1}, .pedID = {22, 23}, .thread = {"hood5"} };
+	pattern = { .weapon = {1}, .allowed = {1}, .thread = {"hood5"} };
 	Patterns.push_back(pattern);
 }
 /* I've only built the pattern system to work with the necessary patterns for the main game.
@@ -102,27 +102,11 @@ int Weapons::GetWeaponBasedOnPattern(int weapon, int x, int y, int z, int pedID,
 			if (DoCoordinatesMatch(Patterns[index].coords[0], Patterns[index].coords[1], Patterns[index].coords[2], x, y, z))
 				weapons = Patterns[index].allowed;
 
-			// Ped Check
-			for (int x = 0; x < sizeof(Patterns[index].pedID); x++)
-			{
-				if (Patterns[index].pedID[x] == pedID)
-				{
-					weapons = Patterns[index].allowed;
-					break;
-				}
-			}
-
-			// Ped and Thread Check
+			// Thread Check
 			if (Patterns[index].thread != "" || Patterns[index].thread != "noname")
 			{
-				for (int x = 0; x < sizeof(Patterns[index].pedID); x++)
-				{
-					if (Patterns[index].pedID[x] == pedID && Patterns[index].thread == thread)
-					{
-						weapons = Patterns[index].allowed;
-						break;
-					}
-				}
+				if (Patterns[index].thread == thread)
+					weapons = Patterns[index].allowed;
 			}
 			if (weapons.size() > 0)
 				return weapons[RandomNumber(0, weapons.size() - 1)];

@@ -2,7 +2,7 @@
 #include "plugin.h"
 #include "Config.h"
 #include "Functions.h"
-#include "voices.h"
+#include "Voices.h"
 
 class Pager : Functions
 {
