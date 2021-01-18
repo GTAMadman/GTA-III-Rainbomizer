@@ -58,7 +58,7 @@ More information about how to configure specific randomizers is provided in the 
 - [Parik27](https://github.com/parik27) - Helping with function hooks and suggestions.
 
 ### Contributors
-- [123robot] (https://www.twitch.tv/123robot) - Testing and helping with parts of the mod
+- [123robot](https://www.twitch.tv/123robot) - Testing and helping with parts of the mod
 - [Fryterp23](https://www.twitch.tv/fryterp23) - Extensive testing of the mod
 
 #### Original Concept
