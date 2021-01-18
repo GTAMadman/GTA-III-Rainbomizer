@@ -21,7 +21,6 @@ private:
 		int weapon = 0;
 		std::vector<int> allowed = {};
 		int coords[3] = { 0, 0, 0 };
-		int pedID[2] = { 0, 0 }; // Multiple can be used if necessary
 		std::string thread = "";
 	};
 	static std::vector<Pattern> Patterns;

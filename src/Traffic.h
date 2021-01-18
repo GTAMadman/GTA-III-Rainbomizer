@@ -30,6 +30,8 @@ private:
 	static void QuitEnteringCar(CPed* ped);
 	static void FixBoatSpawns(CEntity* entity);
 	static void FixBoatPeds(CPed* ped);
+	static bool IsVehicleAllowed(int model);
+	static bool AllVehiclesDisabled();
 public:
 	static void Initialise();
 };

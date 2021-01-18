@@ -1,11 +1,11 @@
 #include "Remote.h"
 
-void Remote::GivePlayerRCVehicle(float x, float y, float z, float angle, short modelId)
+void Remote::GivePlayerRandomRCVehicle(float x, float y, float z, float angle, short modelId)
 {
 	int newModel = 0;
 
 	// Check for vehicle pattern
-	newModel = scm::GetIDBasedOnPattern(modelId, x, y, z, CTheScripts::pActiveScripts->m_szName);
+	newModel = Script::GetIDBasedOnPattern(modelId, x, y, z, CTheScripts::pActiveScripts->m_szName);
 
 	LoadModel(newModel);
 
@@ -18,9 +18,9 @@ void Remote::Initialise()
 {
 	if (Config::rc.Enabled)
 	{
-		plugin::patch::RedirectCall(0x43E04A, GivePlayerRCVehicle);
+		plugin::patch::RedirectCall(0x43E04A, GivePlayerRandomRCVehicle);
 
-		if (scm::Patterns.size() == 0)
-			scm::InitialiseVehiclePatterns();
+		if (Script::Patterns.size() == 0)
+			Script::InitialiseVehiclePatterns();
 	}
 }

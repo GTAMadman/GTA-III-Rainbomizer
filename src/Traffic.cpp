@@ -3,18 +3,44 @@
 int Traffic::ChooseModelToLoad()
 {
 	int model;
-	while ((model = RandomNumber(90, 150), IsModelLoaded(model)));
+
+	// Forced vehicles
+	if (Config::traffic.forceVehicle)
+		return Config::traffic.forcedVehicleID;
+
+	while ((model = RandomNumber(90, 150)), !IsVehicleAllowed(model) && !IsModelLoaded(model));
 
 	return model;
 }
 int Traffic::RandomizeTraffic()
 {
 	int model;
-	while ((model = GetRandomLoadedVehicle(), ModelInfo::IsBlacklistedVehicle(model)) ||
-		model < 90 || model > 150);
+
+	// Forced vehicles
+	if (Config::traffic.forceVehicle)
+	{
+		model = Config::traffic.forcedVehicleID;
+		if (!IsModelLoaded(model))
+			LoadModel(model);
+
+		return model;
+	}
+	for (int i = 0; i < 21; i++)
+	{
+		model = GetRandomLoadedVehicle();
+		if (!IsVehicleAllowed(model) || ModelInfo::IsBlacklistedVehicle(model)
+			|| model < 90 || model > 150)
+			continue;
+
+		return model;
+	}
+
+	/* Sometimes it will run this function before ChooseModelToLoad,
+	so I fix this by forcing an allowed vehicle and loading it */
+	while ((model = RandomNumber(90, 150)), !IsVehicleAllowed(model));
 
 	if (!IsModelLoaded(model))
-		return 110;
+		LoadModel(model);
 
 	return model;
 }
@@ -64,6 +90,7 @@ void* __fastcall Traffic::RandomizeRoadblocks(CVehicle* vehicle, void* edx, int 
 	if (!IsModelLoaded(newModel))
 		newModel = model;
 
+	#ifndef __GNUC__
 	if (CModelInfo::IsBoatModel(newModel))
 		reinterpret_cast<CBoat*>(vehicle)->CBoat::CBoat(newModel, createdBy);
 
@@ -78,13 +105,15 @@ void* __fastcall Traffic::RandomizeRoadblocks(CVehicle* vehicle, void* edx, int 
 
 	if (CModelInfo::IsCarModel(newModel))
 		reinterpret_cast<CAutomobile*>(vehicle)->CAutomobile::CAutomobile(newModel, createdBy);
-
+	#endif
+	
 	vehicle->m_nState = eEntityStatus::STATUS_PHYSICS;
 
 	return vehicle;
 }
 void* __fastcall Traffic::FixTrafficVehicles(CVehicle* vehicle, void* edx, int model, char createdBy)
 {
+	#ifndef __GNUC__
 	if (ModelInfo::IsMiscVehicle(model))
 	{
 		reinterpret_cast<CBoat*>(vehicle)->CBoat::CBoat(model, createdBy);
@@ -95,7 +124,6 @@ void* __fastcall Traffic::FixTrafficVehicles(CVehicle* vehicle, void* edx, int m
 
 		return vehicle;
 	}
-
 	if (CModelInfo::IsBoatModel(model))
 		reinterpret_cast<CBoat*>(vehicle)->CBoat::CBoat(model, createdBy);
 	
@@ -110,6 +138,13 @@ void* __fastcall Traffic::FixTrafficVehicles(CVehicle* vehicle, void* edx, int m
 
 	if (CModelInfo::IsCarModel(model))
 		reinterpret_cast<CAutomobile*>(vehicle)->CAutomobile::CAutomobile(model, createdBy);
+	#endif
+
+	if (vehicle->m_nModelIndex == 116)
+	{
+		vehicle->ChangeLawEnforcerState(1);
+		vehicle->m_nDoorLock = 5;
+	}
 
 	return vehicle;
 }
@@ -123,11 +158,18 @@ void Traffic::FixEmptyPoliceCars(CVehicle* vehicle)
 }
 void __fastcall Traffic::PedEnterCar(CPed* ped, void* edx)
 {
-	ped->m_pVehicle->m_nModelIndex == ModelInfo::RC_BANDIT_MODEL ? QuitEnteringCar(ped) : EnterCar(ped);
+	if (ped->m_pVehicle->m_nModelIndex == ModelInfo::RC_BANDIT_MODEL)
+	{
+		QuitEnteringCar(ped);
+		FindPlayerPed()->SetObjective((eObjective)0);
+		CPad::GetPad(CWorld::PlayerInFocus)->Clear(true);
+	}
+	else
+	EnterCar(ped);
 }
 void __fastcall Traffic::PedExitCar(CPed* ped, void* edx)
 {
-	if (ped->m_pVehicle->m_nModelIndex == ModelInfo::RC_BANDIT_MODEL)
+	if (ped->m_pVehicle->m_nModelIndex == RC_BANDIT_MODEL)
 	{
 		// Teleporting the ped out crashes, so I just remove them :P
 		ped->m_bInVehicle = false;
@@ -143,6 +185,56 @@ void Traffic::FixBoatSpawns(CEntity* entity)
 		entity->m_nState = eEntityStatus::STATUS_PHYSICS;
 
 	CWorld::Add(entity);
+}
+bool Traffic::IsVehicleAllowed(int model)
+{
+	if (model < 90 || model > 150)
+		return false;
+
+	if (model == 124 && Config::traffic.train)
+		return true;
+
+	if (model == 140 && Config::traffic.airTrain)
+		return true;
+
+	if (model == RC_BANDIT_MODEL && Config::traffic.RCBandit)
+		return true;
+
+	if (model == DEAD_DODO_MODEL && Config::traffic.deadDodo)
+		return true;
+
+	if (model == DODO_MODEL && Config::traffic.dodo)
+		return true;
+
+	if (CModelInfo::IsBoatModel(model) && Config::traffic.boats)
+		return true;
+
+	if (CModelInfo::IsCarModel(model) && model != 131 &&
+		model != 126 && model != 141 && Config::traffic.cars)
+		return true;
+
+	return false;
+}
+bool Traffic::AllVehiclesDisabled()
+{
+	if (Config::traffic.cars)
+		return false;
+	if (Config::traffic.airTrain)
+		return false;
+	if (Config::traffic.boats)
+		return false;
+	if (Config::traffic.deadDodo)
+		return false;
+	if (Config::traffic.dodo)
+		return false;
+	if (Config::traffic.RCBandit)
+		return false;
+	if (Config::traffic.train)
+		return false;
+	if (Config::traffic.forceVehicle)
+		return false;
+
+	return true;
 }
 void Traffic::FixBoatPeds(CPed* ped){}
 void Traffic::ExitCar(CPed* ped)
@@ -161,6 +253,9 @@ void Traffic::Initialise()
 {
 	if (Config::traffic.Enabled)
 	{
+		if (AllVehiclesDisabled())
+			return;
+
 		plugin::patch::RedirectCall(0x4167DB, RandomizeTraffic);
 		plugin::patch::RedirectCall(0x4167AD, RandomizePoliceTraffic);
 		plugin::patch::RedirectCall(0x417FDE, RandomizePoliceTraffic);

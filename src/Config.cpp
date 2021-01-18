@@ -1,19 +1,6 @@
 #include "Config.h"
 
-std::string Config::ConfigName = "Rainbomizer.cfg";
-
-/* Annoyingly messy initialisers */
-Config::ScriptedVehiclesRandomizer Config::script;
-Config::ParkedVehiclesRandomizer Config::parked;
-Config::RCVehiclesRandomizer Config::rc;
-Config::TrafficRandomizer Config::traffic;
-Config::WeaponRandomizer Config::weapons;
-Config::ColourRandomizer Config::colours;
-Config::VoiceLineRandomizer Config::voice;
-Config::PickupsRandomizer Config::pickups;
-Config::PagerRandomizer Config::pager;
-Config::Autosave Config::autosave;
-
+std::string Config::ConfigName = Functions::GetRainbomizerDir() + "config.cfg";
 void ReadConfigBool(const std::string& key, const std::string& data, bool& value)
 {
 	if (data.find(key) != std::string::npos)
@@ -40,6 +27,29 @@ void ReadConfigInt(const std::string& key, const std::string& data, int& value)
 		}
 	}
 }
+void ReadConfigString(const std::string& key, const std::string& data, std::string& value)
+{
+	if (data.find(key) != std::string::npos)
+	{
+		std::stringstream stream;
+		std::string output;
+
+		stream << data;
+
+		std::getline(stream, output, '\"');
+		while (!stream.eof())
+		{
+			std::getline(stream, output, '\"');
+			stream.ignore(256, '\"');
+		}
+		value = output;
+	}
+}
+void Config::General::Read(const std::string& line)
+{
+	ReadConfigBool("DisableReplays", line, replays);
+	ReadConfigBool("ModifyCredits", line, credits);
+}
 void Config::ScriptedVehiclesRandomizer::Read(const std::string& line)
 {
 	ReadConfigBool("ScriptVehiclesRandomizer", line, Enabled);
@@ -65,15 +75,28 @@ void Config::ColourRandomizer::Read(const std::string& line)
 	ReadConfigBool("RandomizeExplosionColours", line, explosionsEnabled);
 
 	ReadConfigBool("RainbowHUDColours", line, rainbowTextEnabled);
+	ReadConfigBool("StaticMarkerColours", line, staticMarkerColours);
+	ReadConfigBool("StaticPickupColours", line, staticPickupColours);
+	ReadConfigBool("StaticExplosionColours", line, staticExplosionColours);
 }
 void Config::TrafficRandomizer::Read(const std::string& line)
 {
 	ReadConfigBool("TrafficRandomizer", line, Enabled);
 	ReadConfigBool("RandomizeRoadblocks", line, roadblocksEnabled);
 
-	ReadConfigBool("DeadDodo", line, deadDodo);
-	ReadConfigBool("Train", line, train);
-	ReadConfigBool("AirTrain", line, airTrain);
+	ReadConfigBool("EnableCars", line, cars);
+	ReadConfigBool("EnableBoats", line, boats);
+
+	ReadConfigBool("EnableDeadDodo", line, deadDodo);
+	ReadConfigBool("EnableTrain", line, train);
+	ReadConfigBool("EnableAirTrain", line, airTrain);
+	ReadConfigBool("EnableDodo", line, dodo);
+	ReadConfigBool("EnableRCBandit", line, RCBandit);
+
+	ReadConfigInt("ForcedVehicleID", line, forcedVehicleID);
+
+	if (forcedVehicleID > 89 && forcedVehicleID < 151)
+		forceVehicle = true;
 }
 void Config::WeaponRandomizer::Read(const std::string& line)
 {
@@ -84,17 +107,46 @@ void Config::PickupsRandomizer::Read(const std::string& line)
 	ReadConfigBool("PickupsRandomizer", line, Enabled);
 	ReadConfigBool("RandomizePedWeaponDrops", line, randomizePedDrops);
 
-	ReadConfigBool("Weapons", line, weapons);
-	ReadConfigBool("Health", line, health);
-	ReadConfigBool("Armour", line, armour);
-	ReadConfigBool("Adrenaline", line, adrenaline);
-	ReadConfigBool("Bribes", line, bribes);
-	ReadConfigBool("Briefcase", line, briefcase);
+	ReadConfigBool("EnableWeapons", line, weapons);
+	ReadConfigBool("EnableHealth", line, health);
+	ReadConfigBool("EnableArmour", line, armour);
+	ReadConfigBool("EnableAdrenaline", line, adrenaline);
+	ReadConfigBool("EnableBribes", line, bribes);
+	ReadConfigBool("EnableBriefcase", line, briefcase);
+
+	ReadConfigBool("MoneyInBriefcase", line, briefcaseMoney);
+}
+void Config::CutsceneRandomizer::Read(const std::string& line)
+{
+	ReadConfigBool("CutsceneRandomizer", line, Enabled);
+}
+void Config::PlayerRandomizer::Read(const std::string& line)
+{
+	ReadConfigBool("PlayerRandomizer", line, Enabled);
+
+	ReadConfigBool("RandomizePlayerOutfits", line, playerOutfits);
+	ReadConfigBool("IncludeSpecialModels", line, specialModels);
+}
+void Config::PedRandomizer::Read(const std::string& line)
+{
+	ReadConfigBool("PedRandomizer", line, Enabled);
+
+	ReadConfigBool("RandomizeGenericPeds", line, genericPeds);
+	ReadConfigBool("RandomizeCopPeds", line, copPeds);
 }
 void Config::PagerRandomizer::Read(const std::string& line)
 {
 	ReadConfigBool("PagerRandomizer", line, Enabled);
 	ReadConfigBool("AllowSubtitleMessages", line, allowSubtitlesEnabled);
+}
+void Config::MissionRandomizer::Read(const std::string& line)
+{
+	ReadConfigBool("MissionRandomizer", line, Enabled);
+	ReadConfigString("CustomSeed", line, seed);
+	ReadConfigInt("ForcedMission", line, forcedMission);
+
+	if (seed != "")
+		usingSeed = true;
 }
 void Config::VoiceLineRandomizer::Read(const std::string& line)
 {
@@ -118,6 +170,9 @@ void Config::WriteConfig()
 }
 void Config::Initialise()
 {
+	if (!std::filesystem::exists(Functions::GetRainbomizerDir()))
+		CreateDirectory(Functions::GetRainbomizerDir().c_str(), NULL);
+
 	if (!std::filesystem::exists(ConfigName))
 		WriteConfig();
 
@@ -136,5 +191,10 @@ void Config::Initialise()
 		voice.Read(str);
 		pickups.Read(str);
 		pager.Read(str);
+		cutscene.Read(str);
+		player.Read(str);
+		ped.Read(str);
+		mission.Read(str);
+		general.Read(str);
 	}
 }

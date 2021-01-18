@@ -2,7 +2,7 @@
 
 std::vector<int> Pickups::allowed_pickups;
 std::vector<int> Pickups::original_pickups = { 170, 171, 172, 173, 174, 175, 176, 177,
-178, 180, 181, 1362, 1363, 1364, 1383, 1319 };
+178, 180, 181, 1362, 1363, 1364, 1383, 1319, 1361 };
 int Pickups::RandomizePickups(CVector posn, int modelID, int arg3, int arg4)
 {
 	int newPickup = modelID;
@@ -18,9 +18,22 @@ int Pickups::RandomizePickups(CVector posn, int modelID, int arg3, int arg4)
 
 	return GenerateNewOne(posn, newPickup, arg3, arg4);
 }
+bool Pickups::GiveMoneyForBriefcase(unsigned short model, int plrIndex)
+{
+	if (model == 1319)
+	{
+		if (FindPlayerPed())
+			FindPlayerPed()->GetPlayerInfoForThisPlayerPed()->m_nMoney += RandomNumber(1, 500);
+	}
+	return GivePlayerGoodiesWithPickUpMI(model, plrIndex);
+}
 int Pickups::GenerateNewOne(CVector posn, int modelID, int arg3, int arg4)
 {
 	return plugin::CallAndReturn<int, 0x4304B0>(posn, modelID, arg3, arg4);
+}
+bool Pickups::GivePlayerGoodiesWithPickUpMI(unsigned short model, int plrIndex)
+{
+	return plugin::CallAndReturn<bool, 0x4339F0>(model, plrIndex);
 }
 void Pickups::Initialise()
 {
@@ -49,5 +62,11 @@ void Pickups::Initialise()
 
 		if (Config::pickups.randomizePedDrops)
 			plugin::patch::RedirectCall(0x430682, RandomizePickups);
+
+		if (Config::pickups.briefcaseMoney)
+		{
+			for (int addr : {0x430F2E, 0x430FF7, 0x431186})
+				plugin::patch::RedirectCall(addr, GiveMoneyForBriefcase);
+		}
 	}
 }
