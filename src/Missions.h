@@ -72,6 +72,7 @@ private:
 	inline static SaveStructure mSaveStructure;
 	inline static MissionOrder mMissionOrder;
 
+	inline static int mLastOriginalMissionStarted = -1;
 	inline static int mOriginalMission = -1;
 	inline static int mRandomizedMission = -1;
 	inline static bool mStoreNextScript = false;
@@ -131,6 +132,7 @@ private:
 	static void SetGangHostilityBasedOnNewMission(int mission);
 	static void StoreGangThreatStates();
 	static void ResetGangThreatStates();
+	static void OpenPortlandSafehouseDoor();
 	static void FixEndOfMissions();
 
 public:

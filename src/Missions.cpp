@@ -215,6 +215,7 @@ void __fastcall Missions::RandomizeMissionToStart(CRunningScript* script, void* 
 		}
 		StoreGangThreatStates();
 		SetGangHostilityBasedOnNewMission(missionId);
+		mLastOriginalMissionStarted = mOriginalMission;
 	}
 }
 
@@ -356,6 +357,7 @@ void Missions::MoveScriptToOriginalOffset(CRunningScript* thread)
 	TeleportPlayerAfterMission();
 	ResetGangThreatStates();
 	FixEndOfMissions();
+	mLastOriginalMissionStarted = -1;
 
 	thread->m_nIp = mPostReplaceEndOffsets.front().Start + SIZE_MAIN_SCRIPT;
 	mScriptReplaced = true;
@@ -485,6 +487,11 @@ void Missions::BlockExtraText(wchar_t* message, int time, short flag)
 		replacedByFirstMission = false;
 	}
 }
+void Missions::OpenPortlandSafehouseDoor()
+{
+	for (int i = 0; i < 21; i++)
+		plugin::Command<eScriptCommands::COMMAND_ROTATE_OBJECT>(1025, 210.0, 10.0, 0);
+}
 void Missions::ShouldOverrideRestart(CVector& point, float angle)
 {
 	if (mOriginalMission == 19)
@@ -509,6 +516,9 @@ void Missions::FixEndOfMissions()
 
 	if (mOriginalMission == 19 && mRandomizedMission != 19)
 		plugin::Command<eScriptCommands::COMMAND_CANCEL_OVERRIDE_RESTART>();
+
+	if (mRandomizedMission == 19)
+		OpenPortlandSafehouseDoor();
 }
 void __fastcall Missions::RemoveCarCubes(CPathFind* path, void* edx, float x1, float y1,
 	float z1, float x2, float y2, float z2, char a3)
@@ -644,12 +654,18 @@ void __fastcall Missions::FixSalvatoresGarage(CRunningScript* script, void* edx,
 }
 void Missions::FindClosestHospitalRestartPoint(CVector& point, CVector* storedPoint, float* angle)
 {
-	point = gMissionStartCoords[mOriginalMission];
+	if (mLastOriginalMissionStarted != -1)
+		if (gMissionStartCoords.count(mLastOriginalMissionStarted))
+			point = gMissionStartCoords[mLastOriginalMissionStarted];
+
 	CRestart::FindClosestHospitalRestartPoint(point, storedPoint, angle);
 }
 void Missions::FindClosestPoliceRestartPoint(CVector& point, CVector* storedPoint, float* angle)
 {
-	point = gMissionStartCoords[mOriginalMission];
+	if (mLastOriginalMissionStarted != -1)
+		if (gMissionStartCoords.count(mLastOriginalMissionStarted))
+			point = gMissionStartCoords[mLastOriginalMissionStarted];
+
 	CRestart::FindClosestPoliceRestartPoint(point, storedPoint, angle);
 }
 eLevelName Missions::GetIslandFromMission(int mission)
