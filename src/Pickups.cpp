@@ -3,7 +3,7 @@
 std::vector<int> Pickups::allowed_pickups;
 std::vector<int> Pickups::original_pickups = { 170, 171, 172, 173, 174, 175, 176, 177,
 178, 180, 181, 1362, 1363, 1364, 1383, 1319, 1361 };
-int Pickups::RandomizePickups(CVector posn, int modelID, int arg3, int arg4)
+int Pickups::RandomizePickups(CVector posn, int modelID, int arg3, int ammo)
 {
 	int newPickup = modelID;
 
@@ -12,11 +12,17 @@ int Pickups::RandomizePickups(CVector posn, int modelID, int arg3, int arg4)
 		if (modelID == original_pickups[i])
 		{
 			newPickup = allowed_pickups[RandomNumber(0, allowed_pickups.size() - 1)];
+
+			if (CTheScripts::pActiveScripts->m_szName == std::string("cat1") && modelID == 175)
+			{
+				newPickup = modelID;
+				ammo = 1;
+			}
 			break;
 		}
 	}
 
-	return GenerateNewOne(posn, newPickup, arg3, arg4);
+	return GenerateNewOne(posn, newPickup, arg3, ammo);
 }
 bool Pickups::GiveMoneyForBriefcase(unsigned short model, int plrIndex)
 {
@@ -27,9 +33,9 @@ bool Pickups::GiveMoneyForBriefcase(unsigned short model, int plrIndex)
 	}
 	return GivePlayerGoodiesWithPickUpMI(model, plrIndex);
 }
-int Pickups::GenerateNewOne(CVector posn, int modelID, int arg3, int arg4)
+int Pickups::GenerateNewOne(CVector posn, int modelID, int arg3, int ammo)
 {
-	return plugin::CallAndReturn<int, 0x4304B0>(posn, modelID, arg3, arg4);
+	return plugin::CallAndReturn<int, 0x4304B0>(posn, modelID, arg3, ammo);
 }
 bool Pickups::GivePlayerGoodiesWithPickUpMI(unsigned short model, int plrIndex)
 {

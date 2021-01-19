@@ -8,8 +8,8 @@ class Pickups : Functions
 public:
 	static void Initialise();
 private:
-	static int RandomizePickups(CVector posn, int modelID, int arg3, int arg4);
-	static int GenerateNewOne(CVector posn, int modelID, int arg3, int arg4);
+	static int RandomizePickups(CVector posn, int modelID, int arg3, int ammo);
+	static int GenerateNewOne(CVector posn, int modelID, int arg3, int ammo);
 	static bool GiveMoneyForBriefcase(unsigned short model, int plrIndex);
 	static bool GivePlayerGoodiesWithPickUpMI(unsigned short model, int plrIndex);
 	static std::vector<int> original_pickups;
