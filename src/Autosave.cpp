@@ -1,5 +1,10 @@
 #include "Autosave.h"
 
+template<typename T = int>
+T &
+GetGlobalVariable(uint32_t index) {
+	return *reinterpret_cast<T*>(&CTheScripts::ScriptSpace[index * 4]);
+}
 bool Autosave::ShouldSave = false;
 void __fastcall Autosave::RequestAutosave(CRunningScript* script, void* edx, int opcode)
 {
@@ -11,6 +16,9 @@ void __fastcall Autosave::RequestAutosave(CRunningScript* script, void* edx, int
 		bool inVehicle = FindPlayerPed()->m_bInVehicle;
 
 		script->m_bIsActive = false;
+
+		if (script->m_szName == std::string("yard4"))
+			FixSavingAfterKingdomCome();
 
 		if (FindPlayerVehicle())
 		{
@@ -36,6 +44,12 @@ void __fastcall Autosave::IncreaseMissionsPassed(CRunningScript* script, void* e
 
 	if (script->m_szName != std::string("usj"))
 		ShouldSave = true;
+}
+void Autosave::FixSavingAfterKingdomCome()
+{
+	for (auto& blip : { 3577, 3578, 3579, 3580 })
+		if (GetGlobalVariable(blip))
+			plugin::Call<0x4A5720>(GetGlobalVariable(blip));
 }
 char* Autosave::MakeValidSaveName(int slot)
 {

@@ -61,7 +61,7 @@ std::map<int, std::vector<Missions::MissionEndOffset>> gMissionEndOffsets
 {60, {{5867}}},
 {61, {{4385}}},
 {62, {{3932}}},
-{63, {{5680}}},
+{63, {{5680, 5727}, {5743, 5765}, {5783, 5788}}},
 {64, {{4631, 4638}, {4791}}},
 {65, {{1598}}},
 {66, {{3406}}},
@@ -199,8 +199,8 @@ void __fastcall Missions::RandomizeMissionToStart(CRunningScript* script, void* 
 			GetGlobalVariable(8) = 0;
 			GetGlobalVariable(431) = 0;
 		}
-
-
+		if (mRandomizedMission == 29)
+			CClock::SetGameClock(7, 0);
 
 		std::cout << "Storing mission: " << missionId
 			<< std::endl;
@@ -570,7 +570,7 @@ bool Missions::ShouldRemoveCarCube(float x1, float x2)
 }
 bool Missions::ShouldObjectBeRemoved(int model)
 {
-	int objects[] = { 1299, 1281, 1409, 1412, 855 };
+	int objects[] = { 1299, 1281, 855 };
 
 	for (const int& obj : objects)
 	{

@@ -12,6 +12,7 @@
 #include "CMessages.h"
 #include "CRestart.h"
 #include "CGarages.h"
+#include "CClock.h"
 
 class CRunningScript;
 
