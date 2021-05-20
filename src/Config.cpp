@@ -115,6 +115,10 @@ void Config::PickupsRandomizer::Read(const std::string& line)
 	ReadConfigBool("EnableBriefcase", line, briefcase);
 
 	ReadConfigBool("MoneyInBriefcase", line, briefcaseMoney);
+	ReadConfigString("PickupsCustomSeed", line, seed);
+
+	if (seed != "")
+		usingSeed = true;
 }
 void Config::CutsceneRandomizer::Read(const std::string& line)
 {
@@ -142,7 +146,7 @@ void Config::PagerRandomizer::Read(const std::string& line)
 void Config::MissionRandomizer::Read(const std::string& line)
 {
 	ReadConfigBool("MissionRandomizer", line, Enabled);
-	ReadConfigString("CustomSeed", line, seed);
+	ReadConfigString("MissionCustomSeed", line, seed);
 	ReadConfigInt("ForcedMission", line, forcedMission);
 
 	if (seed != "")
@@ -171,7 +175,7 @@ void Config::WriteConfig()
 void Config::Initialise()
 {
 	if (!std::filesystem::exists(Functions::GetRainbomizerDir()))
-		CreateDirectory(Functions::GetRainbomizerDir().c_str(), NULL);
+		return;
 
 	if (!std::filesystem::exists(ConfigName))
 		WriteConfig();

@@ -2,7 +2,7 @@
 
 std::vector<wchar_t*> lead_developers = { L"GTAMADMAN", L"PARIK" };
 std::vector<wchar_t*> contributors = { L"123ROBOT", L"FRYTERP23" };
-std::vector<wchar_t*> beta_testers = { L"HUGOONE", L"VODCRACK", L"SPEEDYFOLF" };
+std::vector<wchar_t*> beta_testers = { L"HUGOONE", L"SPEEDYFOLF", L"VODCRACK" };
 
 void Credits::PrintCredits(float x, float y, const wchar_t* text, int* position, float offset)
 {
@@ -27,6 +27,9 @@ void Credits::ModifyCredits(float x, float y, wchar_t* text, int* position, floa
 	PrintGroup(L"CONTRIBUTORS", contributors, position, offset);
 	PrintGroup(L"BETA TESTERS", beta_testers, position, offset);
 
+	PrintCredits(1.7, 1.0, L"ROCKSTAR GAMES", position, offset);
+
+	*position += 37.5;
 	PrintCredits(x, y, text, position, offset);
 }
 void Credits::Initialise()

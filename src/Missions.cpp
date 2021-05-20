@@ -310,6 +310,7 @@ void Missions::HandleEndThreadOpcode(CRunningScript* thread, short opcode)
 	if (mRandomizedMission == 19 && mOriginalMission != 19)
 	{
 		GetGlobalVariable(245) = 1;
+		RemoveBridgeObstacles();
 		replacedByFirstMission = false;
 	}
 
@@ -425,16 +426,6 @@ void Missions::SaveMissionData(uint8_t* data, uint32_t& outSize)
 	outSize += sizeof(SaveStructure);
 }
 
-void __fastcall Missions::FixWalkingAfterChaperone(CPed* ped, void* edx, eObjective obj, float x, int a4, int a5)
-{
-	plugin::CallMethod<0x4D8A90>(ped, obj, x, a4, a5);
-
-	if (ped == FindPlayerPed() && x == 1436.25 &&
-		CTheScripts::pActiveScripts->m_szName == std::string("frank1"))
-	{
-		FindPlayerPed()->SetObjective(eObjective::OBJECTIVE_NONE);
-	}
-}
 void __fastcall Missions::FixRemovingExchangeMoney(CRunningScript* script, void* edx, int* arg0, short count)
 {
 	script->CollectParameters(arg0, count);
@@ -469,10 +460,7 @@ void __fastcall Missions::FixGiveMeLibertyMovement(CRunningScript* script, void*
 	if (mRandomizedMission == 19 && mOriginalMission != 19 &&
 		script->m_szName == std::string("eight") && movementSetting == 1)
 	{
-		injector::WriteMemory<int>(0x95CD95, 1);
-		CCutsceneMgr::DeleteCutsceneData();
-		FindPlayerPed()->SetObjective(eObjective::OBJECTIVE_NONE);
-		CPad::GetPad(CWorld::PlayerInFocus)->Clear(true);
+		UnfreezePlayer();
 	}
 }
 void Missions::BlockExtraText(wchar_t* message, int time, short flag)
@@ -505,7 +493,7 @@ void __fastcall Missions::ShouldRestartCritical(CPlayerInfo* player)
 void Missions::FixEndOfMissions()
 {
 	if (mOriginalMission == 79)
-		PlayRandomRadioStation();
+		PlayAudioForCredits();
 
 	if (mRandomizedMission == 79)
 	{
@@ -519,6 +507,12 @@ void Missions::FixEndOfMissions()
 
 	if (mRandomizedMission == 19)
 		OpenPortlandSafehouseDoor();
+
+	if (mRandomizedMission == 35)
+	{
+		UnfreezePlayer();
+		FindPlayerPed()->SetInitialState();
+	}
 }
 void __fastcall Missions::RemoveCarCubes(CPathFind* path, void* edx, float x1, float y1,
 	float z1, float x2, float y2, float z2, char a3)
@@ -603,6 +597,13 @@ bool Missions::ShouldBuildingBeReplaced(int origModel, int newModel)
 		return true;
 
 	return false;
+}
+void Missions::RemoveBridgeObstacles()
+{
+	if (GetGlobalVariable(1118))
+		plugin::Command<eScriptCommands::COMMAND_DELETE_OBJECT>(GetGlobalVariable(1118));
+	if (GetGlobalVariable(1119))
+		plugin::Command<eScriptCommands::COMMAND_DELETE_OBJECT>(GetGlobalVariable(1119));
 }
 void Missions::StoreGangThreatStates()
 {
@@ -695,13 +696,13 @@ void Missions::Initialise()
 		plugin::patch::RedirectCall(0x44FD27, UnlockBridges);
 		plugin::patch::RedirectCall(0x453E80, UnlockBridges);
 		plugin::patch::RedirectCall(0x444F02, RemoveObjects);
+		plugin::patch::RedirectCall(0x440423, RemoveObjects);
 		plugin::patch::RedirectCall(0x4A297B, RemoveObjects);
 		plugin::patch::RedirectCall(0x47899C, RemoveObjects);
 		plugin::patch::RedirectCall(0x4787FE, RemoveObjects);
 		plugin::patch::RedirectCall(0x48C9CD, UnlockShoresideBridge);
 
 		plugin::patch::RedirectCall(0x44265A, RemoveCarCubes);
-		plugin::patch::RedirectCall(0x44327A, FixWalkingAfterChaperone);
 		plugin::patch::RedirectCall(0x43DF22, FixRemovingExchangeMoney);
 		plugin::patch::RedirectCall(0x447FBD, FixSAMLastMissionName);
 		plugin::patch::RedirectCall(0x441152, FixGiveMeLibertyMovement);
@@ -715,6 +716,7 @@ void Missions::Initialise()
 		plugin::patch::RedirectCall(0x43FDFC, ShouldOverrideRestart);
 		plugin::patch::RedirectCall(0x444A7D, ShouldOverrideRestart);
 		plugin::patch::RedirectCall(0x444AAD, ShouldRestartCritical);
+		plugin::patch::Nop(0x588C25, 5); // Purple Nine's Glitch Fix
 
 		mTempMissionData = std::make_unique<unsigned char[]>(SIZE_MISSION_SCRIPT);
 		mLocalVariables = std::make_unique<unsigned int[]>(16);

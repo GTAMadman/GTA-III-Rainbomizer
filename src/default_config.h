@@ -93,6 +93,9 @@ EnableBriefcase = true
 # Randomize a small amount of money given by a briefcase pickup
 MoneyInBriefcase = true
 
+# Enter your own seed - if empty, the seed will be random
+PickupsCustomSeed = ""
+
 ###########################################
 # Cutscene Randomizer
 CutsceneRandomizer = true
@@ -119,7 +122,7 @@ RandomizeCopPeds = true
 MissionRandomizer = true
 
 # Enter your own seed - if empty, the seed will be random
-CustomSeed = ""
+MissionCustomSeed = ""
 
 # Force a specific mission
 ForcedMission = 0

@@ -19,7 +19,7 @@ void Functions::LoadModel(int modelID)
 {
 	if (CStreaming::ms_aInfoForModel[modelID].m_nLoadState != 1)
 	{
-		CStreaming::RequestModel(modelID, 1);
+		CStreaming::RequestModel(modelID, 0);
 		CStreaming::LoadAllRequestedModels(false);
 	}
 }
@@ -29,11 +29,10 @@ bool Functions::IsModelLoaded(int modelID)
 		return true;
 	return false;
 }
-void Functions::PlayRandomRadioStation()
+void Functions::PlayAudioForCredits()
 {
-	gMusicManager.ChangeMusicMode(2);
-	gMusicManager.PreloadCutSceneMusic(RandomNumber(0, 7));
-	gMusicManager.PlayPreloadedCutSceneMusic();
+	gMusicManager.ChangeMusicMode(0);
+	gMusicManager.PlayFrontEndTrack(RandomNumber(0, 7), 1);
 }
 int Functions::GetNumberOfVehiclesLoaded()
 {
@@ -53,6 +52,13 @@ bool Functions::IsRampageRunning()
 		return true;
 
 	return false;
+}
+void Functions::UnfreezePlayer()
+{
+	injector::WriteMemory<int>(0x95CD95, 1);
+	CCutsceneMgr::DeleteCutsceneData();
+	FindPlayerPed()->SetObjective(eObjective::OBJECTIVE_NONE);
+	CPad::GetPad(CWorld::PlayerInFocus)->Clear(true);
 }
 int Functions::RandomNumber(int min, int max)
 {

@@ -11,9 +11,13 @@ int Pickups::RandomizePickups(CVector posn, int modelID, int arg3, int ammo)
 	{
 		if (modelID == original_pickups[i])
 		{
-			newPickup = allowed_pickups[RandomNumber(0, allowed_pickups.size() - 1)];
+			if (Config::pickups.usingSeed)
+				newPickup = allowed_pickups[GetRandomUsingCustomSeed(0, allowed_pickups.size() - 1)];
+			else
+				newPickup = allowed_pickups[RandomNumber(0, allowed_pickups.size() - 1)];
 
-			if (CTheScripts::pActiveScripts->m_szName == std::string("cat1") && modelID == 175)
+			if (CTheScripts::pActiveScripts->m_szName == std::string("cat1") && modelID == 175
+				&& (int)posn.x == -1149 && (int)posn.y == 347 && (int)posn.z == 30)
 			{
 				newPickup = modelID;
 				ammo = 1;
@@ -40,6 +44,12 @@ int Pickups::GenerateNewOne(CVector posn, int modelID, int arg3, int ammo)
 bool Pickups::GivePlayerGoodiesWithPickUpMI(unsigned short model, int plrIndex)
 {
 	return plugin::CallAndReturn<bool, 0x4339F0>(model, plrIndex);
+}
+int Pickups::GetRandomUsingCustomSeed(int min, int max)
+{
+	static std::mt19937 pickupsEngine{ std::hash<std::string>{}(Config::pickups.seed) };
+	std::uniform_int_distribution<int> random(min, max);
+	return random(pickupsEngine);
 }
 void Pickups::Initialise()
 {

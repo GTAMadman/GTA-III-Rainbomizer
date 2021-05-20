@@ -87,6 +87,8 @@ public:
 		bool bribes;
 		bool briefcase;
 		bool briefcaseMoney;
+		std::string seed;
+		bool usingSeed;
 		void Read(const std::string& line);
 	} pickups;
 

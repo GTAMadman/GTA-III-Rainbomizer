@@ -135,6 +135,7 @@ private:
 	static void ResetGangThreatStates();
 	static void OpenPortlandSafehouseDoor();
 	static void FixEndOfMissions();
+	static void RemoveBridgeObstacles();
 
 public:
 	static void Initialise();

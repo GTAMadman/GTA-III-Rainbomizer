@@ -8,6 +8,8 @@
 #include "CGame.h"
 #include "cMusicManager.h"
 #include "CCutsceneMgr.h"
+#include "eObjective.h"
+#include "CWorld.h"
 #include <ctime>
 #include <random>
 
@@ -25,7 +27,8 @@ public:
 	static int GetNumberOfVehiclesLoaded();
 	static int GetRandomLoadedVehicle();
 	static bool IsRampageRunning();
-	static void PlayRandomRadioStation();
+	static void PlayAudioForCredits();
+	static void UnfreezePlayer();
 	struct CText
 	{
 		char* GetText(const char* key);
