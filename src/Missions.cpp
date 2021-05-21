@@ -149,6 +149,27 @@ std::map<int, CVector> gMissionStartCoords = {
 	{77, {-440.726, -6.1465, 3.8614}}, {78, {-440.726, -6.1465, 3.8614}},  
 	{79, {-362.75, 241.802, 59.645}} };
 
+std::map<int, char*> gMissionLabel = 
+{
+	{15, "MEA1"}, {16, "MEA2"}, {17, "MEA3"}, {18, "MEA4"},
+	{19, "LM1"}, {20, "LM2"}, {21, "LM3"}, {22, "LM4"},
+	{23, "LM5"}, {24, "JM1"}, {25, "JM2"}, {26, "JM3"},
+	{27, "JM4"}, {28, "JM5"}, {29, "JM6"}, {30, "TM1"},
+	{31, "TM2"}, {32, "TM3"}, {33, "TM4"}, {34, "TM5"},
+	{35, "FM1"}, {35, "FM1"}, {36, "FM2"}, {37, "FM21"},
+	{38, "FM3"}, {39, "FM4"}, {40, "DIAB1"}, {41, "DIAB2"},
+	{42, "DIAB3"}, {43, "DIAB4"}, {44, "AM1"}, {45, "AM2"},
+	{46, "AM3"}, {47, "AM4"}, {48, "AM5"}, {49, "KM1"},
+	{50, "KM2"}, {51, "KM3"}, {52, "KM4"}, {53, "KM5"},
+	{54, "RM1"}, {55, "RM2"}, {56, "RM3"}, {57, "RM4"},
+	{58, "RM5"}, {59, "RM6"}, {60, "LOVE1"}, {61, "LOVE2"},
+	{62, "LOVE3"}, {63, "YD1"}, {64, "YD2"}, {65, "YD3"},
+	{66, "YD4"}, {67, "LOVE4"}, {68, "LOVE5"}, {69, "LOVE6"},
+	{70, "LOVE7"}, {71, "AS1"}, {72, "AS2"}, {73, "AS3"}, 
+	{74, "HM_1"}, {75, "HM_2"}, {76, "HM_3"}, {77, "HM_4"}, 
+	{78, "HM_5"}, {79, "CAT2"}
+};
+
 const int SIZE_MAIN_SCRIPT = 0x20000;
 bool replacedByFirstMission = false;
 
@@ -438,17 +459,15 @@ void __fastcall Missions::FixRemovingExchangeMoney(CRunningScript* script, void*
 		CTheScripts::ScriptParams[1].iParam = 0;
 	}
 }
-char* __fastcall Missions::FixSAMLastMissionName(CText* text, void* edx, char* key)
+char* __fastcall Missions::FixExchangeMissionPassedName(CText* text, void* edx, char* key)
 {
 	if (key == std::string("CAT2") && mRandomizedMission == 79 && mOriginalMission != 79)
 	{
-		std::string newKey = "AS3";
+		injector::WriteMemory<int>(0x74B808, 0); // Unlock The Exchange
+		std::string newKey = gMissionLabel[mOriginalMission];
 
 		memcpy(key, newKey.c_str(), newKey.size());
 		key[newKey.size()] = '\0';
-
-		injector::WriteMemory<int>(0x74B808, 0);
-		return text->GetText(key);
 	}
 	return text->GetText(key);
 }
@@ -704,7 +723,7 @@ void Missions::Initialise()
 
 		plugin::patch::RedirectCall(0x44265A, RemoveCarCubes);
 		plugin::patch::RedirectCall(0x43DF22, FixRemovingExchangeMoney);
-		plugin::patch::RedirectCall(0x447FBD, FixSAMLastMissionName);
+		plugin::patch::RedirectCall(0x447FBD, FixExchangeMissionPassedName);
 		plugin::patch::RedirectCall(0x441152, FixGiveMeLibertyMovement);
 		plugin::patch::RedirectCall(0x43D0A8, BlockExtraText);
 		plugin::patch::RedirectCall(0x44371C, FixSalvatoresGarage);

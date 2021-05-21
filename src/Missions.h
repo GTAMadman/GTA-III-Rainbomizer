@@ -110,11 +110,10 @@ private:
 	static void __fastcall UnlockBridges(CBuilding* building, void* edx, int modelId);
 	static void __fastcall RemoveCarCubes(CPathFind* path, void* edx, float x1, float y1,
 	float z1, float x2, float y2, float z2, char a3);
-	static void __fastcall FixWalkingAfterChaperone(CPed* ped, void* edx, eObjective obj, float x, int a4, int a5);
 	static void RemoveObjects(CEntity* entity);
 	static void UnlockShoresideBridge();
 	static void __fastcall FixRemovingExchangeMoney(CRunningScript* script, void* edx, int* arg0, short count);
-	static char* __fastcall FixSAMLastMissionName(CText* text, void* edx, char* key);
+	static char* __fastcall FixExchangeMissionPassedName(CText* text, void* edx, char* key);
 	static void __fastcall FixGiveMeLibertyMovement(CRunningScript* script, void* edx, int* arg0, short count);
 	static void BlockExtraText(wchar_t* message, int time, short flag);
 	static void __fastcall FixSalvatoresGarage(CRunningScript* script, void* edx, int* arg0, short count);
