@@ -338,10 +338,11 @@ void Script::Initialise()
 		plugin::patch::RedirectCall(0x43C47E, ScriptVehicleRandomizer);
 		plugin::patch::RedirectCall(0x43DA21, FixForcedPlayerVehicle);
 		plugin::patch::RedirectCall(0x54E1A8, RandomizeADITODeadDodo);
-		plugin::patch::RedirectCall(0x43C8EA, FixUziRiderDriveToCoords);
 		plugin::patch::SetChar(0x52CF7A, 1); // Unlock police vehicles
 
 		if (Patterns.size() == 0)
 			InitialiseVehiclePatterns();
 	}
+	if (Config::script.Enabled || Config::mission.Enabled)
+		plugin::patch::RedirectCall(0x43C8EA, FixUziRiderDriveToCoords);
 }
