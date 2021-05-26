@@ -1,6 +1,7 @@
 #pragma once
 #include "plugin.h"
 #include "Config.h"
+#include "CStats.h"
 #include "CFileMgr.h"
 #include "CRunningScript.h"
 
