@@ -42,22 +42,8 @@ void __fastcall Autosave::IncreaseMissionsPassed(CRunningScript* script, void* e
 {
 	script->CollectParameters(arg0, count);
 
-	if (Config::autosave.Enabled && script->m_szName != std::string("usj"))
+	if (script->m_szName != std::string("usj"))
 		ShouldSave = true;
-
-	// Prevent being given twice the missions passed and percentage amount
-	if (Config::mission.Enabled && script->m_szName == std::string("cat1"))
-	{
-		static int timesPassed = 0;
-		if (timesPassed == 2)
-			timesPassed = 0;
-		if (timesPassed == 0)
-		{
-			CStats::MissionsPassed--;
-			CTheScripts::ScriptParams[0].iParam = 0;
-		}
-		timesPassed++;
-	}
 }
 void Autosave::FixSavingAfterKingdomCome()
 {
@@ -80,10 +66,10 @@ char Autosave::ProcessCommands0to99(CRunningScript* script, int opcode)
 void Autosave::Initialise()
 {
 	if (Config::autosave.Enabled)
+	{
 		plugin::patch::RedirectCall(0x439552, RequestAutosave);
-
-	if (Config::autosave.Enabled || Config::mission.Enabled)
 		plugin::patch::RedirectCall(0x447D88, IncreaseMissionsPassed);
+	}
 
 	// Put this here for now
 	if (Config::general.replays)

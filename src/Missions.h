@@ -113,7 +113,6 @@ private:
 	static void RemoveObjects(CEntity* entity);
 	static void UnlockShoresideBridge();
 	static void __fastcall FixRemovingExchangeMoney(CRunningScript* script, void* edx, int* arg0, short count);
-	static char* __fastcall FixExchangeMissionPassedName(CText* text, void* edx, char* key);
 	static void __fastcall FixGiveMeLibertyMovement(CRunningScript* script, void* edx, int* arg0, short count);
 	static void BlockExtraText(wchar_t* message, int time, short flag);
 	static void __fastcall FixSalvatoresGarage(CRunningScript* script, void* edx, int* arg0, short count);

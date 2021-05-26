@@ -77,10 +77,10 @@ std::map<int, std::vector<Missions::MissionEndOffset>> gMissionEndOffsets
 {76, {{2160}}},
 {77, {{1364}}},
 {78, {{5087}}},
-{79, {{6818, 6865}, {7115}}} };
+{79, {{7115, 9372}, {6818}}} };
 
 std::map<int, CVector> gMissionEndCoords
-= { {15, {1189.36, -40.4975, 9.97308}}, {16, {1199.29, -787.255, 14.6357}},
+= { {15, {1189.36, -40.4975, 9.97308}}, {16, {1195.9921, -805.8192, 14.6813}},
 {17, {1331.08, -1034.28, 14.8164}}, {18, {1214.71, -791.163, 14.6876}},
 {19, {905.944, -424.867, 14.8228}}, {20, {1089.3, -577.442, 14.7335}},
 {21, {1194.76, -873.102, 14.9727}}, {22, {986.887, -69.8014, 7.47254}},
@@ -93,7 +93,7 @@ std::map<int, CVector> gMissionEndCoords
 {35, {1447.64, -188.018, 55.6244}}, {36, {1469.84, -891.621, 11.4162}},
 {37, {1449.92, -190.721, 55.5715}}, {38, {1529.41, -881.984, 11.4131}},
 {39, {511.38, -649.858, 16.1011}},  {40, {1050.61, -931.457, 14.4359}},
-{41, {1286.37, -1050.17, 14.8164}}, {42, {908.851, -828.69, 14.9727}},
+{41, {1218.1616, -1126.9824, 11.8603}}, {42, {908.851, -828.69, 14.9727}},
 {43, {976.39, -443.011, 14.9734}},  {44, {886.256, -425.206, 14.917}},
 {45, {419.078, -1408.07, 26.1335}}, {46, {535.0825, -648.3719, 16.2156}},
 {47, {38.6844, -723.011, 22.7562}}, {48, {415.038, -1383.88, 26.1682}},
@@ -103,7 +103,7 @@ std::map<int, CVector> gMissionEndCoords
 {55, {136.562, 179.578, 11.5317}},  {56, {48.2645, -1548.34, 26.0181}},
 {57, {1606.01, -616.299, 12.1514}}, {58, {113.082, -56.1878, 16.0181}},
 {59, {197.032, -996.545, 26.1647}}, {60, {52.3952, -1547.92, 26.1681}},
-{61, {79.4832, -1548.46, 28.2945}}, {62, {79.4832, -1548.46, 28.2945}},
+{61, {181.0664, -520.0996, 26.1681}}, {62, {79.4832, -1548.46, 28.2945}},
 {63, {46.4881, 69.6748, 16.1681}},  {64, {232.056, -530.438, 25.6575}},
 {65, {260.7568, -789.0242, 27.9702}}, {66, {-72.3884, -1463.71, 26.1442}},
 {67, {80.9688, -1548.67, 28.2945}}, {68, {-1025.87, -73.337, 38.8984}},
@@ -148,27 +148,6 @@ std::map<int, CVector> gMissionStartCoords = {
 	{75, {-440.726, -6.1465, 3.8614}}, {76, {-440.726, -6.1465, 3.8614}}, 
 	{77, {-440.726, -6.1465, 3.8614}}, {78, {-440.726, -6.1465, 3.8614}},  
 	{79, {-362.75, 241.802, 59.645}} };
-
-std::map<int, char*> gMissionLabel = 
-{
-	{15, "MEA1"}, {16, "MEA2"}, {17, "MEA3"}, {18, "MEA4"},
-	{19, "LM1"}, {20, "LM2"}, {21, "LM3"}, {22, "LM4"},
-	{23, "LM5"}, {24, "JM1"}, {25, "JM2"}, {26, "JM3"},
-	{27, "JM4"}, {28, "JM5"}, {29, "JM6"}, {30, "TM1"},
-	{31, "TM2"}, {32, "TM3"}, {33, "TM4"}, {34, "TM5"},
-	{35, "FM1"}, {35, "FM1"}, {36, "FM2"}, {37, "FM21"},
-	{38, "FM3"}, {39, "FM4"}, {40, "DIAB1"}, {41, "DIAB2"},
-	{42, "DIAB3"}, {43, "DIAB4"}, {44, "AM1"}, {45, "AM2"},
-	{46, "AM3"}, {47, "AM4"}, {48, "AM5"}, {49, "KM1"},
-	{50, "KM2"}, {51, "KM3"}, {52, "KM4"}, {53, "KM5"},
-	{54, "RM1"}, {55, "RM2"}, {56, "RM3"}, {57, "RM4"},
-	{58, "RM5"}, {59, "RM6"}, {60, "LOVE1"}, {61, "LOVE2"},
-	{62, "LOVE3"}, {63, "YD1"}, {64, "YD2"}, {65, "YD3"},
-	{66, "YD4"}, {67, "LOVE4"}, {68, "LOVE5"}, {69, "LOVE6"},
-	{70, "LOVE7"}, {71, "AS1"}, {72, "AS2"}, {73, "AS3"}, 
-	{74, "HM_1"}, {75, "HM_2"}, {76, "HM_3"}, {77, "HM_4"}, 
-	{78, "HM_5"}, {79, "CAT2"}
-};
 
 const int SIZE_MAIN_SCRIPT = 0x20000;
 bool replacedByFirstMission = false;
@@ -459,18 +438,6 @@ void __fastcall Missions::FixRemovingExchangeMoney(CRunningScript* script, void*
 		CTheScripts::ScriptParams[1].iParam = 0;
 	}
 }
-char* __fastcall Missions::FixExchangeMissionPassedName(CText* text, void* edx, char* key)
-{
-	if (key == std::string("CAT2") && mRandomizedMission == 79 && mOriginalMission != 79)
-	{
-		injector::WriteMemory<int>(0x74B808, 0); // Unlock The Exchange
-		std::string newKey = gMissionLabel[mOriginalMission];
-
-		memcpy(key, newKey.c_str(), newKey.size());
-		key[newKey.size()] = '\0';
-	}
-	return text->GetText(key);
-}
 void __fastcall Missions::FixGiveMeLibertyMovement(CRunningScript* script, void* edx, int* arg0, short count)
 {
 	script->CollectParameters(arg0, count);
@@ -723,7 +690,6 @@ void Missions::Initialise()
 
 		plugin::patch::RedirectCall(0x44265A, RemoveCarCubes);
 		plugin::patch::RedirectCall(0x43DF22, FixRemovingExchangeMoney);
-		plugin::patch::RedirectCall(0x447FBD, FixExchangeMissionPassedName);
 		plugin::patch::RedirectCall(0x441152, FixGiveMeLibertyMovement);
 		plugin::patch::RedirectCall(0x43D0A8, BlockExtraText);
 		plugin::patch::RedirectCall(0x44371C, FixSalvatoresGarage);
