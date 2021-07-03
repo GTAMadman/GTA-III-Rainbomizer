@@ -202,6 +202,9 @@ void __fastcall Missions::RandomizeMissionToStart(CRunningScript* script, void* 
 		if (mRandomizedMission == 29)
 			CClock::SetGameClock(7, 0);
 
+		if (mRandomizedMission == 26)
+			CGarages::ChangeGarageType(GetGlobalVariable(68), 1, 0);
+
 		std::cout << "Storing mission: " << missionId
 			<< std::endl;
 
@@ -313,6 +316,9 @@ void Missions::HandleEndThreadOpcode(CRunningScript* thread, short opcode)
 		RemoveBridgeObstacles();
 		replacedByFirstMission = false;
 	}
+
+	if (mRandomizedMission == 26)
+		CGarages::ChangeGarageType(GetGlobalVariable(68), 7, 118);
 
 	if (mOriginalMission != 19 && mOriginalMission != 38 && mRandomizedMission == 38
 		&& GetGlobalVariable(275) == 1 && GetGlobalVariable(6) == 0)
@@ -499,6 +505,9 @@ void Missions::FixEndOfMissions()
 		UnfreezePlayer();
 		FindPlayerPed()->SetInitialState();
 	}
+
+	if (mRandomizedMission == 26)
+		CGarages::ChangeGarageType(GetGlobalVariable(68), 7, 118);
 }
 void __fastcall Missions::RemoveCarCubes(CPathFind* path, void* edx, float x1, float y1,
 	float z1, float x2, float y2, float z2, char a3)
