@@ -23,7 +23,7 @@ private:
 	static void RandomizeExplosionColours(int ID, char r, char g, char b, char a, CVector& posn, float radius,
 		float farClip, RwTexture* texture, char flareType, char refl, char obstacles, char arg12, float normalAngle);
 	static void __fastcall RandomizeMarkerColours(C3dMarker* marker);
-	static int RandomizeColourTable();
+	static void RandomizeColourTable(char* input, char* format, int* r, int* g, int* b);
 	static int GetColour(int pattern, int rgb);
 	static int GetPickupsColour(int pattern, int rgb);
 	static CRGBA GetRainbowColour(int r, int g, int b);

@@ -83,8 +83,10 @@ void Script::FixUziRiderDriveToCoords(CVehicle* vehicle, CVector coords, bool ar
 	if (CTheScripts::pActiveScripts->m_szName == std::string("yard2") &&
 		coords.x == 113 && coords.y == -272)
 	{
-		coords.x = 111;
+		coords.x = 109;
+		coords.y = -276;
 	}
+
 	CCarCtrl::JoinCarWithRoadSystemGotoCoors(vehicle, coords, arg2);
 }
 void Script::InitialiseVehiclePatterns()

@@ -282,21 +282,12 @@ void __fastcall Colours::ChooseVehicleColour(CVehicleModelInfo* thisInfo, void* 
 	*prim = RandomNumber(0, 94);
 	*sec = RandomNumber(0, 94);
 }
-int Colours::RandomizeColourTable()
+void Colours::RandomizeColourTable(char* input, char* format, int* r, int* g, int* b)
 {
-	CVehicleModelInfo::LoadVehicleColours();
-	for (int i = 0; i < 95; i++)
-	{
-		CVehicleModelInfo::ms_colourTextureTable[i].r = RandomNumber(0, 255);
-		CVehicleModelInfo::ms_colourTextureTable[i].g = RandomNumber(0, 255);
-		CVehicleModelInfo::ms_colourTextureTable[i].b = RandomNumber(0, 255);
-	}
-	// No idea why re-calling this fixes the crashes
-	CVehicleModelInfo::LoadVehicleColours();
-
-	return 0;
+	*r = RandomNumber(0, 255);
+	*g = RandomNumber(0, 255);
+	*b = RandomNumber(0, 255);
 }
-/* I've only left this in as a sort of "cheat" to get vehicle colours re-randomizing at the start of a new game */
 void __fastcall Colours::ScriptVehicleColourRandomizer(CRunningScript* thisScript, void* edx, int* arg0, short count)
 {
 	thisScript->CollectParameters(arg0, count);
@@ -309,9 +300,8 @@ void Colours::Initialise()
 	if (Config::colours.vehicleEnabled)
 	{
 		// Vehicle Colours
-		plugin::patch::RedirectCall(0x48C04A, RandomizeColourTable);
+		plugin::patch::RedirectCall(0x5214FB, RandomizeColourTable);
 		plugin::patch::RedirectJump(0x520FD0, ChooseVehicleColour);
-		// Using this as a sort of workaround due to a fix
 		plugin::patch::RedirectCall(0x443B1E, ScriptVehicleColourRandomizer);
 	}
 	if (Config::colours.textEnabled)
