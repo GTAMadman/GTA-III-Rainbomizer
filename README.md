@@ -13,6 +13,7 @@ Logo created by Catmare
 - **Traffic Randomizer**: Randomizes vehicles that spawn in traffic, including law enforcement vehicles.
 - **Weapon Randomizer**: Randomizes the weapons that are given to other peds throughout the game.
 - **Pickups Randomizer**: Randomizes pickups throughout the world, including pickups given to you by missions and dropped by peds.
+- **Voice Line Randomizer**: Randomizes the voice lines used throughout the game.
 - **Pager Randomizer**: Randomizes messages received through the pager.
 - **Cutscene Randomizer**: Randomizes the models used in motion-captured cutscenes.
 - **Mission Randomizer**: Randomizes which mission is started by each mission marker. When the randomized mission is complete, the game progresses as if you completed the original.
