@@ -24,7 +24,7 @@ void General::Initialise()
 		std::string follow = "FOLLOW " + credits[RandomNumber(0, credits.size() - 1)]
 			+ " FOR LONG AND SHORT TERM PARKING  ";
 		std::string appearing = "APPEARING IN SHOP SOON, )" 
-			+ credits[RandomNumber(0, credits.size() - 1)] + "), WITH THEIR NEW ALB";
+			+ credits[RandomNumber(0, credits.size() - 1)] + "), WITH THEIR NEW ALBUM, )IS THAT MY DAUGHTER?) ";
 
 		memcpy(aFollow1ForLong, follow.c_str(), follow.size());
 		memcpy(aAppearingInSho, appearing.c_str(), appearing.size());
