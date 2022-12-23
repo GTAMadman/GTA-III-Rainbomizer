@@ -16,8 +16,8 @@ int Pickups::RandomizePickups(CVector posn, int modelID, int arg3, int ammo)
 			else
 				newPickup = allowed_pickups[RandomNumber(0, allowed_pickups.size() - 1)];
 
-			if (CTheScripts::pActiveScripts->m_szName == std::string("cat1") && modelID == 175
-				&& (int)posn.x == -1149 && (int)posn.y == 347 && (int)posn.z == 30)
+			if (IsMission("cat1") && modelID == 175 && (int)posn.x == -1149 && 
+				(int)posn.y == 347 && (int)posn.z == 30)
 			{
 				newPickup = modelID;
 				ammo = 1;
@@ -25,6 +25,9 @@ int Pickups::RandomizePickups(CVector posn, int modelID, int arg3, int ammo)
 			break;
 		}
 	}
+
+	if (Config::pickups.forcedPickup > 0)
+		newPickup = Config::pickups.forcedPickup;
 
 	return GenerateNewOne(posn, newPickup, arg3, ammo);
 }

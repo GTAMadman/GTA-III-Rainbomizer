@@ -1,11 +1,11 @@
 #include "Weapons.h"
 
 std::vector<Weapons::Pattern> Weapons::Patterns;
-int __fastcall Weapons::GiveRandomizedWeapon(CPed* ped, void* edx, int weapon, int ammo)
+int __fastcall Weapons::GiveRandomizedWeapon(CPed* ped, void* edx, eWeaponType weapon, int ammo)
 {
-	if (ped == FindPlayerPed())
+	if (!Config::weapons.randomizePlayerWeapons && (ped == FindPlayerPed()) || weapon == 12)
 	{
-		ped->GiveWeapon((eWeaponType)weapon, ammo);
+		ped->GiveWeapon(weapon, ammo);
 		return weapon;
 	}
 
@@ -14,23 +14,21 @@ int __fastcall Weapons::GiveRandomizedWeapon(CPed* ped, void* edx, int weapon, i
 	int y = ped->GetPosition().y;
 	int z = ped->GetPosition().z;
 
-	int newWeapon = 0;
-
-	// Check pattern
-	if (ped->m_nModelIndex != 1) // Fix cops
-		newWeapon = GetWeaponBasedOnPattern(weapon, x, y, z, ped->m_nModelIndex, CTheScripts::pActiveScripts->m_szName);
-
-	// Give random weapon
-	if (newWeapon == 0)
-		newWeapon = RandomNumber(1, 11);
-
+	int newWeapon = ProcessWeaponChange(weapon, x, y, z, false, false, GetMissionThread());
 	int weaponModel = CWeaponInfo::GetWeaponInfo((eWeaponType)newWeapon)->m_nModelId;
 
 	// Load the weapon model before setting it
+	LoadModel(weaponModel);
 	if (!IsModelLoaded(weaponModel))
-		LoadModel(weaponModel);
+		newWeapon = weapon;
 
 	ped->GiveWeapon((eWeaponType)newWeapon, ammo);
+
+	if (Config::weapons.randomizePlayerWeapons && ped == FindPlayerPed())
+	{
+		player_weapon = newWeapon;
+		return newWeapon;
+	}
 	ped->m_nWepModelID = weaponModel;
 
 	return newWeapon;
@@ -38,11 +36,34 @@ int __fastcall Weapons::GiveRandomizedWeapon(CPed* ped, void* edx, int weapon, i
 void __fastcall Weapons::SetCurrentWeapon(CPed* ped, void* edx, int slot)
 {
 	if (ped == FindPlayerPed())
-	{
 		ped->SetCurrentWeapon(slot);
-		return;
+	else
+		ped->SetCurrentWeapon(GetWeaponSlotFromModelID(ped->m_nWepModelID));
+}
+void __fastcall Weapons::SetPlayerCurrentWeapon(CRunningScript* script, void* edx, int* arg0, short count)
+{
+	script->CollectParameters(arg0, count);
+	int& weapon = CTheScripts::ScriptParams[1].iParam;
+
+	if (weapon != 12)
+	{
+		if (player_weapon > -1)
+			weapon = player_weapon;
+		else
+			weapon = 0;
 	}
-	ped->SetCurrentWeapon(GetWeaponSlotFromModelID(ped->m_nWepModelID));
+}
+void Weapons::GiveRandomWeaponForRampage(int weapon, int time, short kill, int modelId0, unsigned short* text,
+	int modelId2, int modelId3, int modelId4, bool standardSound, bool needHeadshot)
+{
+	int newWeapon = ProcessWeaponChange(weapon, 0, 0, 0, true, needHeadshot, GetMissionThread());
+	int weaponModel = CWeaponInfo::GetWeaponInfo((eWeaponType)newWeapon)->m_nModelId;
+
+	LoadModel(weaponModel);
+	if (!IsModelLoaded(weaponModel))
+		newWeapon = weapon;
+
+	StartFrenzy(newWeapon, time, kill, modelId0, text, modelId2, modelId3, modelId4, standardSound, needHeadshot);
 }
 void __fastcall Weapons::FixRoadblockPoliceWeapons(CPed* ped, void* edx, int slot)
 {
@@ -55,10 +76,6 @@ void __fastcall Weapons::FixRoadblockPoliceWeapons(CPed* ped, void* edx, int slo
 	ped->m_nWepModelID = CWeaponInfo::GetWeaponInfo((eWeaponType)weapon)->m_nModelId;
 
 	ped->SetCurrentWeapon(GetWeaponSlotFromModelID(ped->m_nWepModelID));
-}
-void Weapons::ClearWeapons(CPed* ped)
-{
-	plugin::CallMethod<0x4CFB70, CPed*>(ped);
 }
 void Weapons::InitialiseWeaponPatterns()
 {
@@ -76,11 +93,73 @@ void Weapons::InitialiseWeaponPatterns()
 	// Rumble
 	pattern = { .weapon = {1}, .allowed = {1}, .thread = {"hood5"} };
 	Patterns.push_back(pattern);
+
+	// Silence the Sneak
+	pattern = { .weapon = {11}, .allowed = {11, 8}, .thread = {"ray1"} };
+	Patterns.push_back(pattern);
+
+	// Uzi Rider
+	pattern = { .weapon = {3}, .allowed = {3}, .thread = {"yard2"} };
+	Patterns.push_back(pattern);
+
+
+	/* RAMPAGES */
+
+
+	// Drive-By
+	pattern = { .weapon = {19}, .is_rampage = {true}, .allowed = {19} };
+	Patterns.push_back(pattern);
+
+	// Run-Over
+	pattern = { .weapon = {17}, .is_rampage = {true}, .allowed = {17} };
+	Patterns.push_back(pattern);
+
+	// M16 - Destroy Vehicles
+	pattern = { .weapon = {6}, .is_rampage = {true}, .allowed = {6, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11} };
+	Patterns.push_back(pattern);
+
+	// M16 - Need Headshot
+	pattern = { .weapon = {6}, .is_rampage = {true}, .need_headshot = {true}, .allowed = {6, 7} };
+	Patterns.push_back(pattern);
+
+	// Uzi
+	pattern = { .weapon = {3}, .is_rampage = {true}, .allowed = {3, 2, 4, 5, 6, 7, 8, 9, 10, 11} };
+	Patterns.push_back(pattern);
+
+	// RPG
+	pattern = { .weapon = {8}, .is_rampage = {true}, .allowed = {8, 2, 3, 4, 5, 6, 7, 9, 10, 11} };
+	Patterns.push_back(pattern);
+
+	// Shotgun
+	pattern = { .weapon = {4}, .is_rampage = {true}, .allowed = {4, 2, 3, 5, 6, 7, 8, 9, 10, 11} };
+	Patterns.push_back(pattern);
+
+	// Grenades
+	pattern = { .weapon = {11}, .is_rampage = {true}, .allowed = {11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11} };
+	Patterns.push_back(pattern);
+
+	// Molotovs
+	pattern = { .weapon = {10}, .is_rampage = {true}, .allowed = {10, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11} };
+	Patterns.push_back(pattern);
+
+	// AK47
+	pattern = { .weapon = {5}, .is_rampage = {true}, .allowed = {5, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11} };
+	Patterns.push_back(pattern);
+
+	// Flamethrower
+	pattern = { .weapon = {9}, .is_rampage = {true}, .allowed = {9, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11} };
+	Patterns.push_back(pattern);
+
+	// Sniper
+	pattern = { .weapon = {7}, .is_rampage = {true}, .need_headshot = {true}, .allowed = {7, 6} };
+	Patterns.push_back(pattern);
+
 }
-/* I've only built the pattern system to work with the necessary patterns for the main game.
-   This may be changed in future. */
-int Weapons::GetWeaponBasedOnPattern(int weapon, int x, int y, int z, int pedID, std::string thread)
+int Weapons::ProcessWeaponChange(int weapon, int x, int y, int z, bool is_rampage, bool need_headshot, std::string thread)
 {
+	if (Config::weapons.forcedWeapon >= 1 && Config::weapons.forcedWeapon <= 12)
+		return Config::weapons.forcedWeapon;
+
 	for (int i = 0; i < Patterns.size(); i++)
 	{
 		int index = i;
@@ -108,13 +187,16 @@ int Weapons::GetWeaponBasedOnPattern(int weapon, int x, int y, int z, int pedID,
 				if (Patterns[index].thread == thread)
 					weapons = Patterns[index].allowed;
 			}
+			// Rampages Check
+			if (Patterns[index].is_rampage && Patterns[index].need_headshot == need_headshot)
+				weapons = Patterns[index].allowed;
+
 			if (weapons.size() > 0)
 				return weapons[RandomNumber(0, weapons.size() - 1)];
 		}
 	}
-	return 0;
+	return RandomNumber(1, 11);
 }
-/* Had to create my own function for this */
 int Weapons::GetWeaponSlotFromModelID(int modelID)
 {
 	switch (modelID)
@@ -140,7 +222,9 @@ int Weapons::GetWeaponSlotFromModelID(int modelID)
 	case 180:
 		return 6;
 	case 181:
-		return 9;;
+		return 9;
+	case 182:
+		return 12;
 	}
 	return 0;
 }
@@ -148,20 +232,28 @@ void Weapons::Initialise()
 {
 	if (Config::weapons.Enabled)
 	{
-		// CPed::GiveWeapon
-		for (int weaponAddresses : { 0x4211CC, 0x421201, 0x427BDC, 0x430F5C, 0x431056,
-			0x4311E3, 0x4410B9, 0x441102, 0x4C1201, 0x4C1250, 0x4C1260, 0x4C12AF,
-			0x4C12BF, 0x4C130B, 0x4C131B, 0x4C1328, 0x4C503F, 0x4DB768, 0x4F537E,
-			0x4F5611, 0x4F562B, 0x551F98, 0x587552, 0x5882A9, 0x588377 })
-			plugin::patch::RedirectCall(weaponAddresses, GiveRandomizedWeapon);
+		for (int addr : {0x4410B9, 0x441102, 0x4C1201, 0x4C1250, 
+			0x4C1260, 0x4C12AF, 0x4C12BF, 0x4C130B,0x4C131B, 
+			0x4C1328, 0x4C503F, 0x4DB768, 0x4F537E, 0x4F5611, 
+			0x4F562B, 0x551F98, 0x587552, 0x5882A9, 0x588377})
+			plugin::patch::RedirectCall(addr, GiveRandomizedWeapon);
 
-		// CPed::SetCurrentWeapon
-		for (int setWepAddresses : { 0x437951, 0x44110A, 0x441337, 0x4C126B, 0x4C12CA,
-			0x4C1333, 0x4C1ECE, 0x4C1F88, 0x4C2C0E, 0x4C2C79, 0x4CEF31, 0x4CF1E9,
-			0x4DB771, 0x4DD2AA, 0x4DD95C, 0x4DD971, 0x4E045B, 0x4E0AB6, 0x4E0F29,
-			0x4E147D, 0x4F2583, 0x4F5386, 0x4F5633, 0x4F59E9, 0x5875AA, 0x5883CF })
-			plugin::patch::RedirectCall(setWepAddresses, SetCurrentWeapon);
+		for (int addr : {0x44110A, 0x441337, 0x4C126B, 0x4C12CA, 0x4C1333, 
+			0x4C1ECE, 0x4C1F88, 0x4C2C0E, 0x4C2C79, 0x4CEF31, 0x4CF1E9,
+			0x4DB771, 0x4DD2AA, 0x4DD95C, 0x4DD971, 0x4E045B, 0x4E0AB6,
+			0x4E0F29, 0x4E147D, 0x4F2583, 0x4F5386, 0x4F5633, 0x4F59E9, 
+			0x5875AA, 0x5883CF })
+			plugin::patch::RedirectCall(addr, SetCurrentWeapon);
 
+		if (Config::weapons.randomizePlayerWeapons)
+		{
+			plugin::patch::RedirectCall(0x4412AA, SetPlayerCurrentWeapon);
+			if (Config::weapons.randomizeRampageWeapons)
+			{
+				plugin::patch::RedirectCall(0x442BD2, GiveRandomWeaponForRampage);
+				plugin::patch::RedirectCall(0x44B9FE, GiveRandomWeaponForRampage);
+			}
+		}
 		plugin::patch::RedirectCall(0x437951, FixRoadblockPoliceWeapons);
 
 		if (Patterns.size() == 0)

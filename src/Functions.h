@@ -8,6 +8,7 @@
 #include "CGame.h"
 #include "cMusicManager.h"
 #include "CCutsceneMgr.h"
+#include "eEntityStatus.h"
 #include "eObjective.h"
 #include "CWorld.h"
 #include <ctime>
@@ -23,9 +24,16 @@ public:
 	static void LoadModel(int modelID);
 	static bool DoCoordinatesMatch(int x1, int y1, int z1, int x2, int y2, int z2);
 	static std::string GetRainbomizerDir();
+	static bool IsMission(std::string thread);
+	static std::string GetMissionThread();
 	static bool IsModelLoaded(int modelID);
+	static void ClearWeapons(CPed* ped);
+	static void StartFrenzy(int weapon, int time, short kill, int modelId0, unsigned short* text,
+		int modelId2, int modelId3, int modelId4, bool standardSound, bool needHeadshot);
+	static short QueryModelsKilledByPlayer(int modelId);
 	static int GetNumberOfVehiclesLoaded();
 	static int GetRandomLoadedVehicle();
+	static bool IsRCMission();
 	static bool IsRampageRunning();
 	static void PlayAudioForCredits();
 	static void UnfreezePlayer();

@@ -1,7 +1,7 @@
 #include "Functions.h"
-#include "extensions\ScriptCommands.h"
 
 int* Functions::ms_vehiclesLoaded = reinterpret_cast<int*>(0x773560);
+
 /* Initialised the random engine and given it a seed */
 std::mt19937 Functions::rngEngine{ (unsigned int)time(0) };
 
@@ -25,9 +25,15 @@ void Functions::LoadModel(int modelID)
 }
 bool Functions::IsModelLoaded(int modelID)
 {
-	if (CStreaming::ms_aInfoForModel[modelID].m_nLoadState == 1)
-		return true;
-	return false;
+	return CStreaming::ms_aInfoForModel[modelID].m_nLoadState == 1 ? true : false;
+}
+bool Functions::IsMission(std::string thread)
+{
+	return CTheScripts::pActiveScripts->m_szName == thread;
+}
+std::string Functions::GetMissionThread()
+{
+	return CTheScripts::pActiveScripts->m_szName;
 }
 void Functions::PlayAudioForCredits()
 {
@@ -48,10 +54,25 @@ std::string Functions::GetRainbomizerDir()
 }
 bool Functions::IsRampageRunning()
 {
-	if (injector::ReadMemory<short>(0x95CCB4) == 1)
-		return true;
-
-	return false;
+	return injector::ReadMemory<short>(0x95CCB4) == 1 ? true : false;
+}
+bool Functions::IsRCMission()
+{
+	return IsMission("rc1") || IsMission("rc2") || IsMission("rc3") || IsMission("rc4");
+}
+void Functions::ClearWeapons(CPed* ped)
+{
+	plugin::CallMethod<0x4CFB70, CPed*>(ped);
+}
+void Functions::StartFrenzy(int weapon, int time, short kill, int modelId0, unsigned short* text,
+	int modelId2, int modelId3, int modelId4, bool standardSound, bool needHeadshot)
+{
+	plugin::Call<0x4210E0>(weapon, time, kill, modelId0, text, modelId2, 
+		modelId3, modelId4, standardSound, needHeadshot);
+}
+short Functions::QueryModelsKilledByPlayer(int modelId)
+{
+	return plugin::CallAndReturn<short, 0x421370>(modelId);
 }
 void Functions::UnfreezePlayer()
 {

@@ -114,6 +114,7 @@ private:
 	static void UnlockShoresideBridge();
 	static void __fastcall FixRemovingExchangeMoney(CRunningScript* script, void* edx, int* arg0, short count);
 	static void __fastcall FixGiveMeLibertyMovement(CRunningScript* script, void* edx, int* arg0, short count);
+	static void FixWorldLoadingAfterToyminator(CVector& point);
 	static void BlockExtraText(wchar_t* message, int time, short flag);
 	static void __fastcall FixSalvatoresGarage(CRunningScript* script, void* edx, int* arg0, short count);
 	static void DoGameSpecificStuffAfterSucessLoad();
@@ -127,7 +128,7 @@ private:
 	static bool ShouldBuildingBeReplaced(int origModel, int newModel);
 	static bool ShouldObjectBeRemoved(int model);
 	static bool ShouldRemoveCarCube(float x1, float x2);
-	static void SetGangHostility(int mafia, int triads, int diablos, int yardies, int yakuza = 0, int hoods = 0, int colombians = 1);
+	static void SetGangHostility(bool mafia, bool triads, bool diablos, bool yardies, bool yakuza = false, bool hoods = false, bool colombians = true);
 	static void SetGangHostilityBasedOnNewMission(int mission);
 	static void StoreGangThreatStates();
 	static void ResetGangThreatStates();

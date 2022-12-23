@@ -1,5 +1,6 @@
 #include "Voices.h"
 
+char* aSMissing = reinterpret_cast<char*>(0x600200);
 struct MissionAudioData
 {
 	char* SoundName;
@@ -58,7 +59,7 @@ int Voices::GetRandomizedMissionAudioSfx(const char* name)
 		std::transform(subtitle.begin(), subtitle.end(), subtitle.begin(),
 			[](unsigned char c) { return std::tolower(c); });
 
-		voiceLines[subtitle] = "PAGE_00"; // if not found, replaces text with -
+		voiceLines[subtitle] = "";
 		if (subtitles.count(newName))
 			voiceLines[subtitle] = subtitles[newName];
 	}
@@ -93,7 +94,7 @@ char* __fastcall Voices::FixPaydayForRaySubtitles(CText* text, void* edx, char* 
 	std::transform(subtitle.begin(), subtitle.end(), subtitle.begin(),
 		[](unsigned char c) { return std::tolower(c); });
 
-	voiceLines[subtitle] = "PAGE_00"; // if not found, replaces text with .
+	voiceLines[subtitle] = "";
 	if (subtitles.count(newName))
 		voiceLines[subtitle] = subtitles[newName];
 
@@ -121,6 +122,7 @@ void Voices::Initialise()
 		{
 			plugin::patch::RedirectCall(0x43D119, FixSubtitles);
 			plugin::patch::RedirectCall(0x444745, FixPaydayForRaySubtitles);
+			memcpy(aSMissing, "", 1);
 		}
 	}
 }

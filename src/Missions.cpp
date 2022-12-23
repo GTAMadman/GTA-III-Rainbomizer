@@ -439,7 +439,7 @@ void __fastcall Missions::FixRemovingExchangeMoney(CRunningScript* script, void*
 
 	// Only remove the player money if the original mission is The Exchange
 	if (mRandomizedMission == 79 && mOriginalMission != 79 &&
-		script->m_szName == std::string("cat1") && money == -500000)
+		IsMission("cat1") && money == -500000)
 	{
 		CTheScripts::ScriptParams[1].iParam = 0;
 	}
@@ -450,10 +450,16 @@ void __fastcall Missions::FixGiveMeLibertyMovement(CRunningScript* script, void*
 	bool movementSetting = CTheScripts::ScriptParams[1].iParam;
 
 	if (mRandomizedMission == 19 && mOriginalMission != 19 &&
-		script->m_szName == std::string("eight") && movementSetting == 1)
+		IsMission("eight") && movementSetting == 1)
 	{
 		UnfreezePlayer();
 	}
+}
+void Missions::FixWorldLoadingAfterToyminator(CVector& point)
+{
+	if (mRandomizedMission == 75)
+		point = gMissionEndCoords.at(mOriginalMission);
+	CStreaming::LoadScene(point);
 }
 void Missions::BlockExtraText(wchar_t* message, int time, short flag)
 {
@@ -615,7 +621,7 @@ void Missions::ResetGangThreatStates()
 	SetGangHostility(gang_threats.mafia, gang_threats.triads, gang_threats.diablos,
 		gang_threats.yardies, gang_threats.yakuza, gang_threats.hoods, gang_threats.colombians);
 }
-void Missions::SetGangHostility(int mafia, int triads, int diablos, int yardies, int yakuza, int hoods, int colombians)
+void Missions::SetGangHostility(bool mafia, bool triads, bool diablos, bool yardies, bool yakuza, bool hoods, bool colombians)
 {
 	CPedType::ms_apPedType[7]->m_Threat.bPlayer1 = mafia;
 	CPedType::ms_apPedType[8]->m_Threat.bPlayer1 = triads;
@@ -645,7 +651,7 @@ void __fastcall Missions::FixSalvatoresGarage(CRunningScript* script, void* edx,
 {
 	script->CollectParameters(arg0, count);
 
-	if (script->m_szName == std::string("toni3"))
+	if (IsMission("toni3"))
 		CGarages::ChangeGarageType(CTheScripts::ScriptParams[0].iParam, 21, 0);
 }
 void Missions::FindClosestHospitalRestartPoint(CVector& point, CVector* storedPoint, float* angle)
@@ -700,6 +706,7 @@ void Missions::Initialise()
 		plugin::patch::RedirectCall(0x44265A, RemoveCarCubes);
 		plugin::patch::RedirectCall(0x43DF22, FixRemovingExchangeMoney);
 		plugin::patch::RedirectCall(0x441152, FixGiveMeLibertyMovement);
+		plugin::patch::RedirectCall(0x44F121, FixWorldLoadingAfterToyminator);
 		plugin::patch::RedirectCall(0x43D0A8, BlockExtraText);
 		plugin::patch::RedirectCall(0x44371C, FixSalvatoresGarage);
 		plugin::patch::RedirectCall(0x5918E5, DoGameSpecificStuffAfterSucessLoad);

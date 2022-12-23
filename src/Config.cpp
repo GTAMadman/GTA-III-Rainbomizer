@@ -49,6 +49,7 @@ void Config::General::Read(const std::string& line)
 {
 	ReadConfigBool("DisableReplays", line, replays);
 	ReadConfigBool("ModifyCredits", line, credits);
+	ReadConfigBool("EnableEasterEggs", line, easterEggs);
 }
 void Config::ScriptedVehiclesRandomizer::Read(const std::string& line)
 {
@@ -56,6 +57,8 @@ void Config::ScriptedVehiclesRandomizer::Read(const std::string& line)
 
 	ReadConfigBool("OffroadMissions", line, offroadEnabled);
 	ReadConfigBool("RCMissions", line, rcEnabled);
+
+	ReadConfigInt("ForcedScriptVehicle", line, forcedVehicle);
 }
 void Config::RCVehiclesRandomizer::Read(const std::string& line)
 {
@@ -64,6 +67,7 @@ void Config::RCVehiclesRandomizer::Read(const std::string& line)
 void Config::ParkedVehiclesRandomizer::Read(const std::string& line)
 {
 	ReadConfigBool("ParkedVehiclesRandomizer", line, Enabled);
+	ReadConfigInt("ForcedParkedVehicle", line, forcedVehicle);
 }
 void Config::ColourRandomizer::Read(const std::string& line)
 {
@@ -93,14 +97,16 @@ void Config::TrafficRandomizer::Read(const std::string& line)
 	ReadConfigBool("EnableDodo", line, dodo);
 	ReadConfigBool("EnableRCBandit", line, RCBandit);
 
-	ReadConfigInt("ForcedVehicleID", line, forcedVehicleID);
-
-	if (forcedVehicleID > 89 && forcedVehicleID < 151)
-		forceVehicle = true;
+	ReadConfigInt("ForcedTrafficVehicle", line, forcedVehicle);
 }
 void Config::WeaponRandomizer::Read(const std::string& line)
 {
 	ReadConfigBool("WeaponRandomizer", line, Enabled);
+
+	ReadConfigBool("RandomizePlayerWeapons", line, randomizePlayerWeapons);
+	ReadConfigBool("RandomizeRampageWeapons", line, randomizeRampageWeapons);
+
+	ReadConfigInt("ForcedWeapon", line, forcedWeapon);
 }
 void Config::PickupsRandomizer::Read(const std::string& line)
 {
@@ -117,6 +123,8 @@ void Config::PickupsRandomizer::Read(const std::string& line)
 	ReadConfigBool("MoneyInBriefcase", line, briefcaseMoney);
 	ReadConfigString("PickupsCustomSeed", line, seed);
 
+	ReadConfigInt("ForcedPickup", line, forcedPickup);
+
 	if (seed != "")
 		usingSeed = true;
 }
@@ -130,6 +138,8 @@ void Config::PlayerRandomizer::Read(const std::string& line)
 
 	ReadConfigBool("RandomizePlayerOutfits", line, playerOutfits);
 	ReadConfigBool("IncludeSpecialModels", line, specialModels);
+
+	ReadConfigString("ForcedPlayerModel", line, forcedModel);
 }
 void Config::PedRandomizer::Read(const std::string& line)
 {
@@ -137,6 +147,8 @@ void Config::PedRandomizer::Read(const std::string& line)
 
 	ReadConfigBool("RandomizeGenericPeds", line, genericPeds);
 	ReadConfigBool("RandomizeCopPeds", line, copPeds);
+
+	ReadConfigInt("ForcedPedModel", line, forcedPed);
 }
 void Config::PagerRandomizer::Read(const std::string& line)
 {

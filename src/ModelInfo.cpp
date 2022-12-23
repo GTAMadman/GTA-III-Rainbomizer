@@ -19,6 +19,19 @@ std::string ModelInfo::CheckVehicleModel(int modelID)
 
 	return "unknown";
 }
+bool ModelInfo::IsPoliceVehicle(int modelID)
+{
+	switch (modelID)
+	{
+	case 107:
+	case 116:
+	case 117:
+	case 122:
+	case 123:
+		return true;
+	}
+	return false;
+}
 bool ModelInfo::IsEmergencyVehicle(int modelID)
 {
 	switch (modelID)

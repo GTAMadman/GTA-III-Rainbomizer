@@ -5,8 +5,8 @@ int Traffic::ChooseModelToLoad()
 	int model;
 
 	// Forced vehicles
-	if (Config::traffic.forceVehicle)
-		return Config::traffic.forcedVehicleID;
+	if (Config::traffic.forcedVehicle >= 90 && Config::traffic.forcedVehicle <= 150)
+		return Config::traffic.forcedVehicle;
 
 	while ((model = RandomNumber(90, 150)), !IsVehicleAllowed(model) && !IsModelLoaded(model));
 
@@ -17,9 +17,9 @@ int Traffic::RandomizeTraffic()
 	int model;
 
 	// Forced vehicles
-	if (Config::traffic.forceVehicle)
+	if (Config::traffic.forcedVehicle >= 90 && Config::traffic.forcedVehicle <= 150)
 	{
-		model = Config::traffic.forcedVehicleID;
+		model = Config::traffic.forcedVehicle;
 		if (!IsModelLoaded(model))
 			LoadModel(model);
 
@@ -47,6 +47,16 @@ int Traffic::RandomizeTraffic()
 int Traffic::RandomizePoliceTraffic()
 {
 	int model;
+
+	if (Config::traffic.forcedVehicle >= 90 && Config::traffic.forcedVehicle <= 150)
+	{
+		model = Config::traffic.forcedVehicle;
+		if (!IsModelLoaded(model))
+			LoadModel(model);
+
+		return model;
+	}
+
 	while ((model = GetRandomLoadedVehicle(), ModelInfo::IsMiscVehicle(model) ||
 		ModelInfo::IsBlacklistedVehicle(model)) || model < 90 || model > 150);
 
@@ -86,6 +96,9 @@ void* __fastcall Traffic::RandomizeRoadblocks(CVehicle* vehicle, void* edx, int 
 	int newModel;
 	while ((newModel = GetRandomLoadedVehicle()), ModelInfo::IsMiscVehicle(newModel) ||
 		ModelInfo::IsBlacklistedVehicle(newModel));
+
+	if (Config::traffic.forcedVehicle >= 90 && Config::traffic.forcedVehicle <= 150)
+		newModel = Config::traffic.forcedVehicle;
 
 	if (!IsModelLoaded(newModel))
 		newModel = model;
@@ -148,15 +161,21 @@ void* __fastcall Traffic::FixTrafficVehicles(CVehicle* vehicle, void* edx, int m
 
 	return vehicle;
 }
+int Traffic::ChoosePoliceVehicle(int model)
+{
+	if (ModelInfo::IsPoliceVehicle(model))
+		return model;
+	return 116;
+}
 void Traffic::FixEmptyPoliceCars(CVehicle* vehicle)
 {
 	int origModel = vehicle->m_nModelIndex;
-	vehicle->m_nModelIndex = 116;
+	vehicle->m_nModelIndex = ChoosePoliceVehicle(origModel);
 
 	CCarAI::AddPoliceCarOccupants(vehicle);
 	vehicle->m_nModelIndex = origModel;
 }
-void __fastcall Traffic::PedEnterCar(CPed* ped, void* edx)
+void __fastcall Traffic::PedEnterCar(CPed* ped)
 {
 	if (ped->m_pVehicle->m_nModelIndex == ModelInfo::RC_BANDIT_MODEL)
 	{
@@ -167,7 +186,7 @@ void __fastcall Traffic::PedEnterCar(CPed* ped, void* edx)
 	else
 	EnterCar(ped);
 }
-void __fastcall Traffic::PedExitCar(CPed* ped, void* edx)
+void __fastcall Traffic::PedExitCar(CPed* ped)
 {
 	if (ped->m_pVehicle->m_nModelIndex == RC_BANDIT_MODEL)
 	{
@@ -231,7 +250,7 @@ bool Traffic::AllVehiclesDisabled()
 		return false;
 	if (Config::traffic.train)
 		return false;
-	if (Config::traffic.forceVehicle)
+	if (Config::traffic.forcedVehicle >= 90 && Config::traffic.forcedVehicle <= 150)
 		return false;
 
 	return true;

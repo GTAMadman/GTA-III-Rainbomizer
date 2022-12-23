@@ -104,9 +104,8 @@ void* __fastcall Colours::RandomizeMiscColours(CRGBA* colour, void* edx, int r, 
 		colour->g = GetColour(pattern, 1);
 		colour->b = GetColour(pattern, 2);
 		colour->a = a;
-
-		return colour;
 	}
+	return colour;
 }
 void __fastcall Colours::RandomizeMarkerColours(C3dMarker* marker)
 {
@@ -277,7 +276,7 @@ void Colours::HSVtoRGB(int H, double S, double V, int output[3])
 	output[1] = (Gs + m) * 255;
 	output[2] = (Bs + m) * 255;
 }
-void __fastcall Colours::ChooseVehicleColour(CVehicleModelInfo* thisInfo, void* edx, int* prim, int* sec)
+void __fastcall Colours::ChooseVehicleColour(CVehicleModelInfo* info, void* edx, int* prim, int* sec)
 {
 	*prim = RandomNumber(0, 94);
 	*sec = RandomNumber(0, 94);
@@ -288,9 +287,9 @@ void Colours::RandomizeColourTable(char* input, char* format, int* r, int* g, in
 	*g = RandomNumber(0, 255);
 	*b = RandomNumber(0, 255);
 }
-void __fastcall Colours::ScriptVehicleColourRandomizer(CRunningScript* thisScript, void* edx, int* arg0, short count)
+void __fastcall Colours::ScriptVehicleColourRandomizer(CRunningScript* script, void* edx, int* arg0, short count)
 {
-	thisScript->CollectParameters(arg0, count);
+	script->CollectParameters(arg0, count);
 
 	CTheScripts::ScriptParams[1].iParam = RandomNumber(0, 94);
 	CTheScripts::ScriptParams[2].iParam = RandomNumber(0, 94);

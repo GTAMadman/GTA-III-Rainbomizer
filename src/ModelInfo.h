@@ -12,6 +12,7 @@ class ModelInfo
 public:
 	inline static const int RC_BANDIT_MODEL = 131;
 	inline static const int DODO_MODEL = 126;
+	static bool IsPoliceVehicle(int modelID);
 	static bool IsEmergencyVehicle(int modelID);
 	static bool IsBlacklistedVehicle(int modelID);
 	static bool IsMiscVehicle(int modelID);

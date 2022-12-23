@@ -1,6 +1,4 @@
 #include "Cutscenes.h"
-#include "plugin.h"
-#include "CModelInfo.h"
 
 const char* Cutscenes::GetRandomModel(const char* model)
 {

@@ -70,8 +70,4 @@ void Autosave::Initialise()
 		plugin::patch::RedirectCall(0x439552, RequestAutosave);
 		plugin::patch::RedirectCall(0x447D88, IncreaseMissionsPassed);
 	}
-
-	// Put this here for now
-	if (Config::general.replays)
-		plugin::patch::Nop(0x48C975, 5);
 }

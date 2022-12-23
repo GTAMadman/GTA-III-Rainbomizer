@@ -4,6 +4,9 @@ void* __fastcall Ped::RandomizeGenericPeds(CCivilianPed* ped, void* edx, ePedTyp
 {
 	int newModel = RandomNumber(0, 82);
 
+	if (Config::ped.forcedPed >= 0 && Config::ped.forcedPed <= 82)
+		newModel = Config::ped.forcedPed;
+
 	if (IsSpecialModel(newModel) && !IsModelLoaded(newModel)
 		|| IsSpecialModel(model) || IsRampageRunning() || IsGangMemberForMission(model))
 		newModel = model;
@@ -62,12 +65,12 @@ bool Ped::IsGangMemberForMission(int model)
 	// Mssion fixes
 	if (model == 14 || model == 15)
 	{
-		if (CTheScripts::pActiveScripts->m_szName == std::string("yard2"))
+		if (IsMission("yard2"))
 			return true;
 	}
 	if (model == 22 || model == 23)
 	{
-		if (CTheScripts::pActiveScripts->m_szName == std::string("hood1"))
+		if (IsMission("hood1"))
 			return true;
 	}
 

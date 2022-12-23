@@ -1,8 +1,10 @@
 #pragma once
+#include "plugin.h"
+#include "Functions.h"
+#include "CModelInfo.h"
 #include "CCutsceneObject.h"
 #include <vector>
 #include <string>
-#include "Functions.h"
 
 struct CCutsceneObject_vftable;
 

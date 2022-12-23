@@ -23,13 +23,14 @@ private:
 	static int RandomizePoliceTraffic();
 	static void* __fastcall RandomizeRoadblocks(CVehicle* vehicle, void* edx, int model, char createdBy);
 	static void FixEmptyPoliceCars(CVehicle* vehicle);
-	static void __fastcall PedExitCar(CPed* ped, void* edx);
-	static void __fastcall PedEnterCar(CPed* ped, void* edx);
+	static void __fastcall PedExitCar(CPed* ped);
+	static void __fastcall PedEnterCar(CPed* ped);
 	static void ExitCar(CPed* ped);
 	static void EnterCar(CPed* ped);
 	static void QuitEnteringCar(CPed* ped);
 	static void FixBoatSpawns(CEntity* entity);
 	static void FixBoatPeds(CPed* ped);
+	static int ChoosePoliceVehicle(int model);
 	static bool IsVehicleAllowed(int model);
 	static bool AllVehiclesDisabled();
 public:

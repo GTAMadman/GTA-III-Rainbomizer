@@ -2,6 +2,12 @@
 #include "plugin.h"
 #include "Config.h"
 #include "Functions.h"
+#include "CStreaming.h"
+#include "extensions/ScriptCommands.h"
+#include "CAnimBlendClumpData.h"
+#include "CAnimBlendAssociation.h"
+#include "common.h"
+#include "rw/rwplcore.h"
 #include <array>
 
 class Player : Functions
@@ -16,4 +22,5 @@ private:
 	static void GivePlayerRandomOutfit();
 	static void RandomizeOutfitOnFade();
 	static void ChangePlayerModel(const char* modelName);
+	inline static CAnimBlendAssociation* association = nullptr;
 };

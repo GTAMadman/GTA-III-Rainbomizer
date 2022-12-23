@@ -7,6 +7,7 @@ R"(# GTA III Rainbomizer Configuration #
 
 DisableReplays = false
 ModifyCredits = true
+EnableEasterEggs = true
 
 ###########################################
 # Script Vehicles Randomizer
@@ -17,6 +18,9 @@ ScriptVehiclesRandomizer = true
 OffroadMissions = true # (Patriot Playground, A Ride In the Park, Multistorey Mayhem, Gripped!)
 RCMissions = true # (Diablo Destruction, Mafia Massacre, Casino Calamity, Rumpo Rampage)
 
+# Force a script vehicle
+ForcedScriptVehicle = 0
+
 ###########################################
 # RC Vehicles Randomizer
 RandomizeRCVehicles = true
@@ -24,6 +28,9 @@ RandomizeRCVehicles = true
 ###########################################
 # Parked Vehicles Randomizer
 ParkedVehiclesRandomizer = true
+
+# Force a parked vehicle
+ForcedParkedVehicle = 0
 
 ###########################################
 # Colour Randomizer
@@ -64,12 +71,21 @@ EnableDeadDodo = true
 EnableTrain = true
 EnableAirTrain = true
 
-# Force a vehicle with its ID, set to an invalid value to disable
-ForcedVehicleID = 0
+# Force a traffic vehicle
+ForcedTrafficVehicle = 0
 
 ###########################################
 # Weapon Randomizer
 WeaponRandomizer = true
+
+# Gives the player random weapons
+RandomizePlayerWeapons = true
+
+# Gives the player random weapons for rampages
+RandomizeRampageWeapons = true
+
+# Force a weapon
+ForcedWeapon = 0
 
 ###########################################
 # Pickups Randomizer
@@ -96,6 +112,9 @@ MoneyInBriefcase = true
 # Enter your own seed - if empty, the seed will be random
 PickupsCustomSeed = ""
 
+# Force a pickup
+ForcedPickup = 0
+
 ###########################################
 # Cutscene Randomizer
 CutsceneRandomizer = true
@@ -107,6 +126,9 @@ PlayerRandomizer = true
 RandomizePlayerOutfits = true
 IncludeSpecialModels = true
 
+# Force a player model
+ForcedPlayerModel = ""
+
 ###########################################
 # Ped Randomizer
 PedRandomizer = true
@@ -116,6 +138,9 @@ RandomizeGenericPeds = true
 
 # Randomizes cops on the streets, in vehicles and at roadblocks
 RandomizeCopPeds = true
+
+# Force a ped model
+ForcedPedModel = -1
 
 ###########################################
 # Mission Randomizer

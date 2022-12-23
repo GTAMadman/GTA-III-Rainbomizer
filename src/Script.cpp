@@ -18,7 +18,7 @@ void __fastcall Script::ScriptVehicleRandomizer(CRunningScript* script, void* ed
 		newModel = origModel;
 
 	if (newModel != origModel)
-		newModel = GetIDBasedOnPattern(origModel, x, y, z, script->m_szName);
+		newModel = ProcessScriptVehicleChange(origModel, x, y, z, script->m_szName);
 
 	// Attempt to load the vehicle
 	LoadModel(newModel);
@@ -32,43 +32,43 @@ void __fastcall Script::ScriptVehicleRandomizer(CRunningScript* script, void* ed
 void __fastcall Script::FixForcedPlayerVehicle(CRunningScript* script, void* edx, int* arg0, short count)
 {
 	script->CollectParameters(arg0, count);
-	int origModel = CTheScripts::ScriptParams[1].iParam;
+	int& modelId = CTheScripts::ScriptParams[1].iParam;
 
 	// Blow Fish Fix - Open the gate for any vehicle
-	if (script->m_szName == std::string("fsh_gte") && origModel == 98)
+	if (script->m_szName == std::string("fsh_gte") && modelId == 98)
 	{ 
 		if (FindPlayerVehicle())
-			CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+			modelId = FindPlayerVehicle()->m_nModelIndex;
 	}
 
 	// I Scream, You Scream
-	if (script->m_szName == std::string("diablo2") && origModel == 113)
+	if (IsMission("diablo2") && modelId == 113)
 	{
 		if (FindPlayerVehicle())
 		{
 			int model = FindPlayerVehicle()->m_nModelIndex;
 			if (IsEmergencyVehicle(model) || model == 113 && model != 122 && model != 123)
-				CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+				modelId = FindPlayerVehicle()->m_nModelIndex;
 		}
 	}
 
 	if (Config::script.offroadEnabled)
 	{
-		if (origModel == 90 || origModel == 96 || origModel == 129)
+		if (modelId == 90 || modelId == 96 || modelId == 129)
 			if (FindPlayerVehicle())
-				CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+				modelId = FindPlayerVehicle()->m_nModelIndex;
 	}
 	if (Config::script.rcEnabled)
 	{
-		if (origModel == 149)
+		if (modelId == 149)
 			if (FindPlayerVehicle())
-				CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+				modelId = FindPlayerVehicle()->m_nModelIndex;
 	}
 }
 void* __fastcall Script::RandomizeADITODeadDodo(CPlane* plane, void* edx, int model, char createdBy)
 {
-	int newModel = GetIDBasedOnPattern(model, plane->GetPosition().x, plane->GetPosition().y,
-		plane->GetPosition().z, CTheScripts::pActiveScripts->m_szName);
+	int newModel = ProcessScriptVehicleChange(model, plane->GetPosition().x, plane->GetPosition().y,
+		plane->GetPosition().z, GetMissionThread());
 
 	LoadModel(newModel);
 
@@ -80,7 +80,7 @@ void* __fastcall Script::RandomizeADITODeadDodo(CPlane* plane, void* edx, int mo
 }
 void Script::FixUziRiderDriveToCoords(CVehicle* vehicle, CVector coords, bool arg2)
 {
-	if (CTheScripts::pActiveScripts->m_szName == std::string("yard2") &&
+	if (IsMission("yard2") &&
 		coords.x == 113 && coords.y == -272)
 	{
 		coords.x = 109;
@@ -125,11 +125,11 @@ void Script::InitialiseVehiclePatterns()
 	Patterns.push_back(pattern);
 
 	// Stretch - Salvatore's Called a Meeting
-	pattern = { .vehicle = {99}, .coords = {1187, -860, 14}, .doors = {4}, };
+	pattern = { .vehicle = {99}, .coords = {1187, -860, 14}, .door_check = {true} };
 	Patterns.push_back(pattern);
 
 	// Perennial - Uzi Rider
-	pattern = { .vehicle = {94}, .allowed = {127}, .coords = {4, -310, 16}, .doors = {4} };
+	pattern = { .vehicle = {94}, .allowed = {127}, .coords = {4, -310, 16}, .door_check = {true} };
 	Patterns.push_back(pattern);
 
 	// The Crook
@@ -143,7 +143,7 @@ void Script::InitialiseVehiclePatterns()
 	Patterns.push_back(pattern);
 
 	// The Thieves
-	pattern = { .vehicle = {95}, .denied = {97, 106, 116, 117}, .coords = { 1190, -796, 13 }, .doors = {4} };
+	pattern = { .vehicle = {95}, .denied = {97, 106, 116, 117}, .coords = { 1190, -796, 13 }, .door_check = {true} };
 	Patterns.push_back(pattern);
 
 	// Stinger - Grand Theft Auto
@@ -189,10 +189,11 @@ void Script::InitialiseVehiclePatterns()
 	.allowedType = {"car"}, .coords = {1189, -864, 14} }; // Removed some large vehicles
 	Patterns.push_back(pattern);
 }
-/* I've only built the pattern system to work with the necessary patterns for the main game.
-   This may be changed in future. */
-int Script::GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread)
+int Script::ProcessScriptVehicleChange(int origModel, int x, int y, int z, std::string thread)
 {
+	if (Config::script.forcedVehicle >= 90 && Config::script.forcedVehicle <= 150)
+		return Config::script.forcedVehicle;
+
 	// Scripted Vehicle Patterns
 	for (int i = 0; i < Patterns.size(); i++)
 	{
@@ -235,12 +236,12 @@ int Script::GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread
 			}
 			// Coordinate and door check
 			if (DoCoordinatesMatch(Patterns[index].coords[0], Patterns[index].coords[1], Patterns[index].coords[2], x, y, z) &&
-				Patterns[index].doors > 0)
+				Patterns[index].door_check)
 			{
 				vehicles = Patterns[index].allowed;
 				for (int model = 90; model < 151; model++)
 				{
-					if (CVehicleModelInfo::GetMaximumNumberOfPassengersFromNumberOfDoors(model) == Patterns[index].doors - 1)
+					if (CVehicleModelInfo::GetMaximumNumberOfPassengersFromNumberOfDoors(model) > 2)
 						vehicles.push_back(model);
 				}
 			}

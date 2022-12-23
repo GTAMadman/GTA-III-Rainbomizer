@@ -1,4 +1,5 @@
 #include "plugin.h"
+#include "General.h"
 #include "Script.h"
 #include "Remote.h"
 #include "Player.h"
@@ -20,6 +21,7 @@ class Rainbomizer {
 public:
 	Rainbomizer() {
 		Config::Initialise();
+		General::Initialise();
 		Script::Initialise();
 		Remote::Initialise();
 		Parked::Initialise();

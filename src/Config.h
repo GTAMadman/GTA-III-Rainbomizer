@@ -16,6 +16,7 @@ public:
 	{
 		bool replays;
 		bool credits;
+		bool easterEggs;
 		void Read(const std::string& line);
 	} general;
 
@@ -24,6 +25,7 @@ public:
 		bool Enabled;
 		bool offroadEnabled;
 		bool rcEnabled;
+		int forcedVehicle = 0;
 		void Read(const std::string& line);
 	} script;
 
@@ -36,6 +38,7 @@ public:
 	inline static struct ParkedVehiclesRandomizer
 	{
 		bool Enabled;
+		int forcedVehicle;
 		void Read(const std::string& line);
 	} parked;
 
@@ -51,14 +54,16 @@ public:
 		bool RCBandit;
 		bool boats;
 		bool dodo;
-		bool forceVehicle;
-		int forcedVehicleID = 0;
+		int forcedVehicle = 0;
 		void Read(const std::string& line);
 	} traffic;
 
 	inline static struct WeaponRandomizer
 	{
 		bool Enabled;
+		bool randomizePlayerWeapons;
+		bool randomizeRampageWeapons;
+		int forcedWeapon = 0;
 		void Read(const std::string& line);
 	} weapons;
 
@@ -89,6 +94,7 @@ public:
 		bool briefcaseMoney;
 		std::string seed;
 		bool usingSeed;
+		int forcedPickup = 0;
 		void Read(const std::string& line);
 	} pickups;
 
@@ -104,6 +110,7 @@ public:
 		bool Enabled;
 		bool playerOutfits;
 		bool specialModels;
+		std::string forcedModel = "";
 		void Read(const std::string& line);
 	} player;
 
@@ -112,6 +119,7 @@ public:
 		bool Enabled;
 		bool genericPeds;
 		bool copPeds;
+		int forcedPed = -1;
 		void Read(const std::string& line);
 	} ped;
 

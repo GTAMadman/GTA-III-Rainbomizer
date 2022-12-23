@@ -14,8 +14,8 @@ public:
 private:
 	static void* __fastcall RandomizeColours(CRGBA* colour, void* edx, int r, int g, int b, int a);
 	static void* __fastcall RandomizeMiscColours(CRGBA* colour, void* edx, int r, int g, int b, int a);
-	static void __fastcall ScriptVehicleColourRandomizer(CRunningScript* thisScript, void* edx, int* arg0, short count);
-	static void __fastcall ChooseVehicleColour(CVehicleModelInfo* thisInfo, void* edx, int* prim, int* sec);
+	static void __fastcall ScriptVehicleColourRandomizer(CRunningScript* script, void* edx, int* arg0, short count);
+	static void __fastcall ChooseVehicleColour(CVehicleModelInfo* info, void* edx, int* prim, int* sec);
 	static void RandomizePickupColours(int ID, char r, char g, char b, char a, CVector& posn, float radius, 
 		float farClip, char coronaType, char flareType, char refl, char obstacles, char arg12, float normalAngle);
 	static void RandomizeRaceMarkerColours(int ID, char r, char g, char b, char a, CVector& posn, float radius,

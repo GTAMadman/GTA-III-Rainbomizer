@@ -29,12 +29,12 @@ private:
 		int coords[3] = { 0, 0, 0 };
 		int move[3] = { 0, 0, 0 };
 		std::string thread = "";
-		int doors = 0;
+		bool door_check = false;
 	};
 	static std::vector<int> ProcessVehicleTypes(Pattern pattern);
 public:
 	static void Initialise();
 	static std::vector<Pattern> Patterns;
 	static void InitialiseVehiclePatterns();
-	static int GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread);
+	static int ProcessScriptVehicleChange(int origModel, int x, int y, int z, std::string thread);
 };
