@@ -148,17 +148,17 @@ void Script::InitialiseVehiclePatterns()
 
 	// Stinger - Grand Theft Auto
 	pattern = { .vehicle = {92}, .denied = { 93, 97, 98, 99, 103, 104, 106, 108, 112, 113, 117, 118, 121, 122, 123,
-	127, 130, 132, 133, 138, 139, 144, 145, 146, 149}, .allowedType = {"car"}, .thread = {"kenji2"} };
+	127, 130, 132, 133, 135, 137, 138, 139, 144, 145, 146, 149}, .allowedType = {"car"}, .thread = {"kenji2"} };
 	Patterns.push_back(pattern); // Denied all larger vehicles
 
 	// Infurnus - Grand Theft Auto
 	pattern = { .vehicle = {101}, .denied = {93, 97, 98, 99, 103, 104, 106, 108, 112, 113, 117, 118, 121, 122, 123,
-	127, 130, 132, 133, 138, 139, 144, 145, 146, 149}, .allowedType = {"car"}, .thread = {"kenji2"} };
+	127, 130, 132, 133, 135, 137, 138, 139, 144, 145, 146, 149}, .allowedType = {"car"}, .thread = {"kenji2"} };
 	Patterns.push_back(pattern); // Denied all larger vehicles
 
 	// Cheetah - Grand Theft Auto
 	pattern = { .vehicle = {105},.denied = {93, 97, 98, 99, 103, 104, 106, 108, 112, 113, 117, 118, 121, 122, 123,
-	127, 130, 132, 133, 138, 139, 144, 145, 146, 149},.allowedType = {"car"},.thread = {"kenji2"} };
+	127, 130, 132, 133, 135, 137, 138, 139, 144, 145, 146, 149},.allowedType = {"car"},.thread = {"kenji2"} };
 	Patterns.push_back(pattern); // Denied all larger vehicles
 
 	// Infurnus - Rigged To Blow
