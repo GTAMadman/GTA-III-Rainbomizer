@@ -1,6 +1,6 @@
 Rainbomizer is a randomizer for Grand Theft Auto III.
 
-<img src="https://cdn.discordapp.com/attachments/651869008618061837/678350944890781739/r1outink.png">
+<img src="https://i.ibb.co/dQQK7YP/Rainbomizer.png">
 Logo created by Catmare
 
 
@@ -27,7 +27,7 @@ Logo created by Catmare
 
 Other versions of the game *will not* work and will most likely cause a crash.
 
-Check this link for a v1.0 EXE - https://cdn.discordapp.com/attachments/681997064288469090/682718874306740252/gta3.exe
+Check this link for a v1.0 EXE - https://drive.google.com/file/d/1hLcv8i8u1dZSHdYmcabLMQe0zpFaFiL2/view
 
 ## Configuration
 
