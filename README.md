@@ -27,7 +27,7 @@ Logo created by Catmare
 
 Other versions of the game *will not* work and will most likely cause a crash.
 
-Check this link for a v1.0 EXE - https://www.mediafire.com/file/pyckfxw1eol2s9t/gta3.exe/file
+Check this link for a v1.0 EXE - https://mega.nz/file/4fE2VDZT#7inaHTvLsfdM9SNUjyKfpjoe9h0RDD6lIGyymQ7-n2w
 
 ## Configuration
 
